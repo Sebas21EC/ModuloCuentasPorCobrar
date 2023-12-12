@@ -7,6 +7,7 @@ using AccountsReceivableModule.DTOs.BankAccount;
 using AccountsReceivableModule.Models;
 using AccountsReceivableModule.Models.BankAccount;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccountsReceivableModule.Services.BankAccountService
 {
@@ -16,25 +17,41 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        public BankAccountService(IMapper mapper,DataContext context)
+        public BankAccountService(IMapper mapper, DataContext context)
         {
             _context = context;
             _mapper = mapper;
         }
+
         public async Task<ServiceResponse<List<GetBankAccountDto>>> Create(CreateBankAccountDto newBankAccount)
         {
             var serviceResponse = new ServiceResponse<List<GetBankAccountDto>>();
-            var bankAccount = _mapper.Map<BankAccount>(newBankAccount);
-            bankAccounts.Add(bankAccount);
-            serviceResponse.Data = bankAccounts.Select(c => _mapper.Map<GetBankAccountDto>(c)).ToList();
-            return serviceResponse;
 
+            try
+            {
+                var bankAccount = _mapper.Map<BankAccount>(newBankAccount);
+
+                _context.BankAccounts.Add(bankAccount);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = await _context.BankAccounts
+                    .Select(c => _mapper.Map<GetBankAccountDto>(c))
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetBankAccountDto>>> Get()
         {
             var serviceResponse = new ServiceResponse<List<GetBankAccountDto>>();
-            serviceResponse.Data = bankAccounts.Select(c => _mapper.Map<GetBankAccountDto>(c)).ToList();
+            var dbBankAccounts = await _context.BankAccounts.ToListAsync();
+            serviceResponse.Data = dbBankAccounts.Select(c => _mapper.Map<GetBankAccountDto>(c)).ToList();
             return serviceResponse;
         }
 
@@ -42,20 +59,9 @@ namespace AccountsReceivableModule.Services.BankAccountService
         {
             var serviceResponse = new ServiceResponse<GetBankAccountDto>();
 
-            var bankAccount = bankAccounts.FirstOrDefault(x => x.Id == accountId);
-
-            serviceResponse.Data = _mapper.Map<GetBankAccountDto>(bankAccount);
-            return serviceResponse;
-        }
-
-        public async Task<ServiceResponse<GetBankAccountDto>> Update(UpdateBankAccountDto updateBankAccount)
-        {
-
-            var serviceResponse = new ServiceResponse<GetBankAccountDto>();
-
             try
             {
-                var bankAccount = bankAccounts.FirstOrDefault(x => x.Id == updateBankAccount.Id);
+                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (bankAccount == null)
                 {
@@ -63,21 +69,15 @@ namespace AccountsReceivableModule.Services.BankAccountService
                     serviceResponse.Message = "Bank Account not found.";
                     return serviceResponse;
                 }
-                // _mapper.Map(updateBankAccount, bankAccount);
 
-                bankAccount.Number = updateBankAccount.Number;
-                bankAccount.BankName = updateBankAccount.BankName;
-                bankAccount.Name = updateBankAccount.Name;
-                bankAccount.Details = updateBankAccount.Details;
-                bankAccount.Status = updateBankAccount.Status;
                 serviceResponse.Data = _mapper.Map<GetBankAccountDto>(bankAccount);
-
             }
             catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
             }
+
             return serviceResponse;
         }
 
@@ -85,12 +85,11 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
         public async Task<ServiceResponse<List<GetBankAccountDto>>> Delete(string accountId)
         {
-
             var serviceResponse = new ServiceResponse<List<GetBankAccountDto>>();
 
             try
             {
-                var bankAccount = bankAccounts.FirstOrDefault(x => x.Id == accountId);
+                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (bankAccount == null)
                 {
@@ -98,10 +97,52 @@ namespace AccountsReceivableModule.Services.BankAccountService
                     serviceResponse.Message = "Bank Account not found.";
                     return serviceResponse;
                 }
-                
-                bankAccounts.Remove(bankAccount);
-                serviceResponse.Data = bankAccounts.Select(c => _mapper.Map<GetBankAccountDto>(c)).ToList();
 
+                _context.BankAccounts.Remove(bankAccount);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = await _context.BankAccounts
+                    .Select(c => _mapper.Map<GetBankAccountDto>(c))
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
+
+
+        public async Task<ServiceResponse<GetBankAccountDto>> Update(UpdateBankAccountDto updateBankAccount)
+        {
+            var serviceResponse = new ServiceResponse<GetBankAccountDto>();
+
+            try
+            {
+                // Buscar la cuenta bancaria por su ID en la base de datos.
+                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == updateBankAccount.Id);
+
+                if (bankAccount == null)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Bank Account not found.";
+                    return serviceResponse;
+                }
+
+                // Actualizar los campos de la cuenta bancaria con los nuevos valores.
+                bankAccount.Number = updateBankAccount.Number;
+                bankAccount.BankName = updateBankAccount.BankName;
+                bankAccount.Name = updateBankAccount.Name;
+                bankAccount.Details = updateBankAccount.Details;
+                bankAccount.Status = updateBankAccount.Status;
+
+                // Guardar los cambios en la base de datos.
+                await _context.SaveChangesAsync();
+
+                // Devolver la cuenta bancaria actualizada en la respuesta.
+                serviceResponse.Data = _mapper.Map<GetBankAccountDto>(bankAccount);
             }
             catch (Exception ex)
             {
@@ -110,7 +151,6 @@ namespace AccountsReceivableModule.Services.BankAccountService
             }
             return serviceResponse;
         }
-
 
 
     }

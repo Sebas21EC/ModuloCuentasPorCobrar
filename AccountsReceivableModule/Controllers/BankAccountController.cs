@@ -19,13 +19,13 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet]
-        public  async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Get()
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Get()
         {
             return Ok(await _bankAccountService.Get());
         }
 
         [HttpGet("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string accountId)
+public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string accountId)
         {
             var response = await _bankAccountService.GetById(accountId);
             if (response.Data == null)
@@ -34,17 +34,21 @@ namespace AccountsReceivableModule.Controllers
             }
             return Ok(response);
         }
-        
+
 
         [HttpPost]
-        public  async Task<ActionResult<ServiceResponse<List<GetBankAccountDto>>>> Create([FromBody] CreateBankAccountDto newBankAccount)
+        public async Task<ActionResult<ServiceResponse<List<GetBankAccountDto>>>> Create([FromBody] CreateBankAccountDto newBankAccount)
         {
-           
-            return Ok(await _bankAccountService.Create(newBankAccount));
+            var response = await _bankAccountService.Create(newBankAccount);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update([FromBody] UpdateBankAccountDto bankAccount)
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update(UpdateBankAccountDto bankAccount)
         {
             var response = await _bankAccountService.Update(bankAccount);
             if (response.Data == null)
@@ -55,7 +59,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpDelete("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string accountId)
+public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string accountId)
         {
             var response = await _bankAccountService.Delete(accountId);
             if (response.Data == null)
@@ -65,6 +69,6 @@ namespace AccountsReceivableModule.Controllers
             return Ok(response);
         }
 
-    
+
     }
 }
