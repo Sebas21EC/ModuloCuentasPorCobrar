@@ -8,7 +8,7 @@ namespace AccountsReceivableModule.DTOs.BankAccount
 {
     public class GetBankAccountDto
     {
-        public BankAccountId? Id { get; set; }
+        public string? Id { get; set; }
         public string? Number { get; private set; }
         public string? BankName { get; private set; }
         public string? Name { get; private set; }

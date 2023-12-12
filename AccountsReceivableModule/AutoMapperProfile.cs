@@ -14,6 +14,7 @@ namespace AccountsReceivableModule
         {
             CreateMap<BankAccount, GetBankAccountDto>();
             CreateMap<CreateBankAccountDto, BankAccount>();
+            CreateMap<UpdateBankAccountDto, BankAccount>();
         }
     }
 }

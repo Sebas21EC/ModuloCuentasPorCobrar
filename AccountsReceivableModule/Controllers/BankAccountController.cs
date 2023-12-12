@@ -27,8 +27,14 @@ namespace AccountsReceivableModule.Controllers
         [HttpGet("{accountId}")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string accountId)
         {
-            return Ok(await _bankAccountService.GetById(accountId));
+            var response = await _bankAccountService.GetById(accountId);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
+        
 
         [HttpPost]
         public  async Task<ActionResult<ServiceResponse<List<GetBankAccountDto>>>> Create([FromBody] CreateBankAccountDto newBankAccount)
@@ -40,14 +46,25 @@ namespace AccountsReceivableModule.Controllers
         [HttpPut]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update([FromBody] UpdateBankAccountDto bankAccount)
         {
-            return Ok(await _bankAccountService.Update(bankAccount));
+            var response = await _bankAccountService.Update(bankAccount);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
 
         [HttpDelete("{accountId}")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string accountId)
         {
-            return Ok(await _bankAccountService.Delete(accountId));
+            var response = await _bankAccountService.Delete(accountId);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
 
+    
     }
 }

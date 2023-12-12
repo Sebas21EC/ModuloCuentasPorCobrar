@@ -16,7 +16,7 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
         Task<ServiceResponse<GetBankAccountDto>> Update(UpdateBankAccountDto bankAccount);
 
-        Task<ServiceResponse<GetBankAccountDto>> Delete(string accountId);
+        Task<ServiceResponse<List<GetBankAccountDto>>> Delete(string accountId);
         
     }
 }
