@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AccountsReceivableModule.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231212034719_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20231213010356_Migration001")]
+    partial class Migration001
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,7 @@ namespace AccountsReceivableModule.Migrations
             modelBuilder.Entity("AccountsReceivableModule.Models.BankAccount.BankAccount", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BankName")

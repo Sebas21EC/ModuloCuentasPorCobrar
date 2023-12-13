@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import BankAccountCrud from "./components/BankAccount/BankAccountCrud";
+import { Component } from "react";
+class App extends Component {
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  constructor (props) {
+    super(props);
+    this.state = {
+      bankAccounts: []
+    }
+  }
+
+  api_url = "https://localhost:7275/";
+
+  async componentDidMount() {
+    const response = await fetch(this.api_url + "api/BankAccount");
+    const data = await response.json();
+    this.setState({ bankAccounts: data });
+  }
+
+  render() {
+    const { bankAccounts } = this.state;
+    return (
+      <div>
+        <h1>Bank Accounts</h1>
+        <BankAccountCrud /> {/* Renderiza el componente BankAccountCrud */}
+      </div>
+    );
+  }
 }
 
 export default App;
