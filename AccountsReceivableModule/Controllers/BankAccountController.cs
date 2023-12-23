@@ -46,6 +46,7 @@ namespace AccountsReceivableModule.Controllers
                 // Devuelve un error 400 Bad Request con mensajes de validación
                 return BadRequest(ModelState);
             }
+
             var response = await _bankAccountService.Create(newBankAccount);
             if (response.Data == null)
             {

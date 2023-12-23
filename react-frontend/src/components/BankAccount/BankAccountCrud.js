@@ -3,12 +3,16 @@ import axios from "axios";
 import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
 import EditBankAccountModal from "./EditBankAccountModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import API_BASE_URL from "../../config";
+
 
 function BankAccountCrud() {
   const [bankAccounts, setBankAccounts] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     Load();
@@ -16,7 +20,7 @@ function BankAccountCrud() {
 
   const Load = async () => {
     try {
-      const result = await axios.get("https://localhost:7275/api/BankAccount");
+      const result = await axios.get(`${API_BASE_URL}/BankAccount`);
       setBankAccounts(result.data.data);
     } catch (err) {
       alert(err);
@@ -32,15 +36,12 @@ function BankAccountCrud() {
     setShowEditModal(true);
   };
 
-  const handleDeleteClick = async (id) => {
-    try {
-      await axios.delete(`https://localhost:7275/api/BankAccount/${id}`);
-      alert("Bank Account deleted Successfully");
-      Load();
-    } catch (err) {
-      alert(err);
-    }
+  const handleDeleteClick = (account) => {
+    setSelectedAccount(account);
+    setShowDeleteModal(true);
   };
+
+
 
   return (
     <div>
@@ -67,6 +68,13 @@ function BankAccountCrud() {
         onClose={() => setShowEditModal(false)}
         account={selectedAccount}
         onLoad={Load}
+      />
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        account={selectedAccount}
+        onLoad={Load}
+
       />
     </div>
   );

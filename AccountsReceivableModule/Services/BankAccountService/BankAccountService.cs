@@ -29,7 +29,11 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
             try
             {
+                // Generar el nuevo ID en el formato deseado
+                string newAccountId = GenerateNewAccountId();
+
                 var bankAccount = _mapper.Map<BankAccount>(newBankAccount);
+                bankAccount.Id = newAccountId;
 
                 _context.BankAccounts.Add(bankAccount);
                 await _context.SaveChangesAsync();
@@ -46,6 +50,30 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
             return serviceResponse;
         }
+
+        // Función para generar el nuevo ID en el formato "CTA-BAN-001", "CTA-BAN-002", etc.
+        private string GenerateNewAccountId()
+        {
+            // Consulta la base de datos para obtener el último ID creado
+            var lastBankAccount = _context.BankAccounts.OrderByDescending(b => b.Id).FirstOrDefault();
+
+            if (lastBankAccount != null)
+            {
+                // Obtén el número del último ID y aumenta en uno
+                int lastNumber = int.Parse(lastBankAccount.Id.Split('-').Last());
+                int newNumber = lastNumber + 1;
+
+                // Formatea el nuevo ID
+                return $"CTA-BAN-{newNumber:D3}";
+            }
+            else
+            {
+                // Si no hay cuentas bancarias en la base de datos, comienza desde "CTA-BAN-001"
+                return "CTA-BAN-001";
+            }
+        }
+
+
 
         public async Task<ServiceResponse<List<GetBankAccountDto>>> Get()
         {

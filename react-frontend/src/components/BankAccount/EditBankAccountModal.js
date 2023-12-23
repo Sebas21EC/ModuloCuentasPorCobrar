@@ -22,7 +22,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       // Realiza una solicitud PUT para actualizar la cuenta bancaria
       await axios.put(`${API_BASE_URL}/BankAccount/${account.id}`, {
@@ -32,20 +32,20 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
         details: details,
         status: status,
       });
-      
+
       // Muestra una alerta de éxito
       alert("Bank Account Updated Successfully");
-      
+
       // Limpia los campos del formulario
       setNumber("");
       setBankName("");
       setName("");
       setDetails("");
       setStatus(true);
-      
+
       // Llama a la función onLoad para recargar la lista de cuentas bancarias
       onLoad();
-      
+
       // Cierra el modal
       onClose();
     } catch (err) {
@@ -54,7 +54,6 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
     }
   };
 
-  
   return (
     <div
       className={`modal ${show ? "show" : ""}`}
@@ -114,17 +113,15 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
                   onChange={(e) => setDetails(e.target.value)}
                 />
               </div>
-              <div className="form-group">
-                <label>Status</label>
-                <select
-                  className="form-control"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value={true}>Active</option>
-                  <option value={false}>Inactive</option>
-                </select>
-              </div>
+              <select
+                className="form-control"
+                value={status ? "true" : "false"}
+                onChange={(e) => setStatus(e.target.value === "true")}
+              >
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+
               <button type="submit" className="btn btn-primary">
                 Save
               </button>

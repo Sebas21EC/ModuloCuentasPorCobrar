@@ -1,6 +1,10 @@
 import React from "react";
 
-function BankAccountTable({ bankAccounts, onEditClick, onDeleteClick }) {
+function BankAccountTable({
+  bankAccounts,
+  onEditClick,
+  onDeleteClick, // Elimina "= { handleDeleteClick }"
+}) {
   return (
     <table className="table table-dark" align="center">
       {/* Encabezados de tabla */}
@@ -26,7 +30,7 @@ function BankAccountTable({ bankAccounts, onEditClick, onDeleteClick }) {
               <button
                 type="button"
                 className="btn btn-danger"
-                onClick={() => onDeleteClick(bankAccount.id)}
+                onClick={() => onDeleteClick(bankAccount)}
               >
                 Delete
               </button>
