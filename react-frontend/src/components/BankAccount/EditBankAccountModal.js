@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config"; // Asegúrate de que API_BASE_URL tenga la URL correcta
 
 function EditBankAccountModal({ show, onClose, account, onLoad }) {
   const [number, setNumber] = useState("");
@@ -8,9 +9,9 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
   const [details, setDetails] = useState("");
   const [status, setStatus] = useState(true);
 
-
   useEffect(() => {
     if (account) {
+      // Si se proporciona una cuenta, establece los valores iniciales del formulario
       setNumber(account.number);
       setBankName(account.bankName);
       setName(account.name);
@@ -21,29 +22,39 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
     try {
-        console.log(account);
-
-      await axios.put(`https://localhost:7275/api/BankAccount/${account.id}`, {
+      // Realiza una solicitud PUT para actualizar la cuenta bancaria
+      await axios.put(`${API_BASE_URL}/BankAccount/${account.id}`, {
         number: number,
         bankName: bankName,
         name: name,
         details: details,
         status: status,
       });
+      
+      // Muestra una alerta de éxito
       alert("Bank Account Updated Successfully");
+      
+      // Limpia los campos del formulario
       setNumber("");
       setBankName("");
       setName("");
       setDetails("");
       setStatus(true);
+      
+      // Llama a la función onLoad para recargar la lista de cuentas bancarias
       onLoad();
+      
+      // Cierra el modal
       onClose();
     } catch (err) {
-      alert(err);
+      // Maneja errores aquí, muestra una alerta de error o realiza alguna otra acción
+      alert(err.message);
     }
   };
 
+  
   return (
     <div
       className={`modal ${show ? "show" : ""}`}

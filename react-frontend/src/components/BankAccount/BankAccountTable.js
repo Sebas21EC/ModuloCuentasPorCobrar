@@ -8,6 +8,7 @@ function BankAccountTable({ bankAccounts, onEditClick, onDeleteClick }) {
         {bankAccounts.map((bankAccount) => (
           <tr key={bankAccount.id}>
             {/* Celdas de datos */}
+            <td>{bankAccount.id}</td>
             <td>{bankAccount.number}</td>
             <td>{bankAccount.bankName}</td>
             <td>{bankAccount.name}</td>

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config"; // Importa la variable global
+
 
 function AddBankAccountModal({ show, onClose, onLoad }) {
   const [number, setNumber] = useState("");
@@ -19,7 +21,9 @@ function AddBankAccountModal({ show, onClose, onLoad }) {
       });
     
     try {
-      await axios.post("https://localhost:7275/api/BankAccount", {
+
+
+      await axios.post(`${API_BASE_URL}/BankAccount`, {
         number: number,
         bankName: bankName,
         name: name,

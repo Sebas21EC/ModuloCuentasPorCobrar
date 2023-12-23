@@ -115,16 +115,16 @@ namespace AccountsReceivableModule.Services.BankAccountService
         }
 
 
-        public async Task<ServiceResponse<GetBankAccountDto>> Update(UpdateBankAccountDto updateBankAccount)
+        public async Task<ServiceResponse<GetBankAccountDto>> Update(string accountId, UpdateBankAccountDto updateBankAccount)
         {
             var serviceResponse = new ServiceResponse<GetBankAccountDto>();
 
             try
             {
                 // Buscar la cuenta bancaria por su ID en la base de datos.
-                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == updateBankAccount.Id);
+                var bankAccountToUpdate = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
 
-                if (bankAccount == null)
+                if (bankAccountToUpdate == null)
                 {
                     serviceResponse.Success = false;
                     serviceResponse.Message = "Bank Account not found.";
@@ -132,25 +132,32 @@ namespace AccountsReceivableModule.Services.BankAccountService
                 }
 
                 // Actualizar los campos de la cuenta bancaria con los nuevos valores.
-                bankAccount.Number = updateBankAccount.Number;
-                bankAccount.BankName = updateBankAccount.BankName;
-                bankAccount.Name = updateBankAccount.Name;
-                bankAccount.Details = updateBankAccount.Details;
-                bankAccount.Status = updateBankAccount.Status;
+                bankAccountToUpdate.Number = updateBankAccount.Number;
+                bankAccountToUpdate.BankName = updateBankAccount.BankName;
+                bankAccountToUpdate.Name = updateBankAccount.Name;
+                bankAccountToUpdate.Details = updateBankAccount.Details;
+                bankAccountToUpdate.Status = updateBankAccount.Status;
 
                 // Guardar los cambios en la base de datos.
                 await _context.SaveChangesAsync();
 
+                // Volver a cargar la entidad desde la base de datos para obtener la versión actualizada.
+                // Esto asegura que los cambios se apliquen correctamente en la entidad.
+                await _context.Entry(bankAccountToUpdate).ReloadAsync();
+
                 // Devolver la cuenta bancaria actualizada en la respuesta.
-                serviceResponse.Data = _mapper.Map<GetBankAccountDto>(bankAccount);
+                serviceResponse.Data = _mapper.Map<GetBankAccountDto>(bankAccountToUpdate);
             }
             catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
             }
+
             return serviceResponse;
         }
+
+
 
 
     }

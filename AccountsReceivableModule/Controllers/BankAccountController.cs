@@ -55,21 +55,23 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpPut("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update([FromBody] UpdateBankAccountDto bankAccount)
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update(string accountId, [FromBody] UpdateBankAccountDto bankAccount)
         {
             if (!ModelState.IsValid)
             {
                 // Devuelve un error 400 Bad Request con mensajes de validación
                 return BadRequest(ModelState);
             }
-            var response = await _bankAccountService.Update(bankAccount);
+
+            var response = await _bankAccountService.Update(accountId, bankAccount);
+
             if (response.Data == null)
             {
                 return NotFound(response);
             }
+
             return Ok(response);
         }
-
         [HttpDelete("{accountId}")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string accountId)
         {
