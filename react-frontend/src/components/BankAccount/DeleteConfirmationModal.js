@@ -8,7 +8,7 @@ function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
    // console.log("bankAccountId: " + account.bankAccountId);
     try {
       await axios.delete(`${API_BASE_URL}/BankAccount/${account.bankAccountId}`);
-      //console.log("bankAccountId: " + account.bankAccountId);
+      console.log("bankAccountId: " + account.bankAccountId);
       alert("Bank Account deleted Successfully");
       onLoad(); // Cargar los datos nuevamente después de la eliminación
     } catch (err) {
