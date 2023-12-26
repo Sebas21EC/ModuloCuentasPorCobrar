@@ -5,10 +5,10 @@ import API_BASE_URL from "../../config";
 function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
   
   const handleConfirmDelete = async () => {
-    console.log("id: " + account.id);
+    console.log("bankAccountId: " + account.bankAccountId);
     try {
-      await axios.delete(`${API_BASE_URL}/BankAccount/${account.id}`);
-      console.log("id: " + account.id);
+      await axios.delete(`${API_BASE_URL}/BankAccount/${account.bankAccountId}`);
+      console.log("bankAccountId: " + account.bankAccountId);
       alert("Bank Account deleted Successfully");
       onLoad(); // Cargar los datos nuevamente después de la eliminación
     } catch (err) {

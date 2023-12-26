@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AccountsReceivableModule.Models.BankAccount;
+using AccountsReceivableModule.Models;
 
 namespace AccountsReceivableModule.DTOs.BankAccount
 {
     public class CreateBankAccountDto
     {
-    public string? Number { get; set; }
+    public string? BankAccountNumber { get; set; }
     public string? BankName { get; set; }
-    public string? Name { get; set; }
-    public string? Details { get; set; }
-    public bool Status { get; set; }
+    public string? BankAccountName { get; set; }
+    public string? BankAccountDetails { get; set; }
+    public bool BankAccountStatus { get; set; }
     }
 }

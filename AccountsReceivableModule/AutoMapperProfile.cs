@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AccountsReceivableModule.DTOs.BankAccount;
-using AccountsReceivableModule.Models.BankAccount;
+using AccountsReceivableModule.Models;
 using AutoMapper;
 
 namespace AccountsReceivableModule

@@ -3,20 +3,20 @@ import axios from "axios";
 import API_BASE_URL from "../../config"; // Asegúrate de que API_BASE_URL tenga la URL correcta
 
 function EditBankAccountModal({ show, onClose, account, onLoad }) {
-  const [number, setNumber] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankName, setBankName] = useState("");
-  const [name, setName] = useState("");
-  const [details, setDetails] = useState("");
-  const [status, setStatus] = useState(true);
+  const [bankAccountName, setBankAccountName] = useState("");
+  const [bankAccountDetails, setBankAccountDetails] = useState("");
+  const [bankAccountStatus, setBankAccountStatus] = useState(true);
 
   useEffect(() => {
     if (account) {
       // Si se proporciona una cuenta, establece los valores iniciales del formulario
-      setNumber(account.number);
+      setBankAccountNumber(account.bankAccountNumber);
       setBankName(account.bankName);
-      setName(account.name);
-      setDetails(account.details);
-      setStatus(account.status);
+      setBankAccountName(account.bankAccountName);
+      setBankAccountDetails(account.bankAccountDetails);
+      setBankAccountStatus(account.bankAccountStatus);
     }
   }, [account]);
 
@@ -25,23 +25,23 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
 
     try {
       // Realiza una solicitud PUT para actualizar la cuenta bancaria
-      await axios.put(`${API_BASE_URL}/BankAccount/${account.id}`, {
-        number: number,
+      await axios.put(`${API_BASE_URL}/BankAccount/${account.bankAccountId}`, {
+        bankAccountNumber: bankAccountNumber,
         bankName: bankName,
-        name: name,
-        details: details,
-        status: status,
+        bankAccountName: bankAccountName,
+        bankAccountDetails: bankAccountDetails,
+        bankAccountStatus: bankAccountStatus,
       });
 
       // Muestra una alerta de éxito
       alert("Bank Account Updated Successfully");
 
       // Limpia los campos del formulario
-      setNumber("");
+      setBankAccountNumber("");
       setBankName("");
-      setName("");
-      setDetails("");
-      setStatus(true);
+      setBankAccountName("");
+      setBankAccountDetails("");
+      setBankAccountStatus(true);
 
       // Llama a la función onLoad para recargar la lista de cuentas bancarias
       onLoad();
@@ -78,12 +78,12 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
           <div className="modal-body">
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Account Number</label>
+                <label>Bank Account Number</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
+                  value={bankAccountNumber}
+                  onChange={(e) => setBankAccountNumber(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -96,27 +96,27 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
                 />
               </div>
               <div className="form-group">
-                <label>Name</label>
+                <label>Bank Account Name</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={bankAccountName}
+                  onChange={(e) => setBankAccountName(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <label>Details</label>
+                <label>Bank Account Details</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
+                  value={bankAccountDetails}
+                  onChange={(e) => setBankAccountDetails(e.target.value)}
                 />
               </div>
               <select
                 className="form-control"
-                value={status ? "true" : "false"}
-                onChange={(e) => setStatus(e.target.value === "true")}
+                value={bankAccountStatus ? "true" : "false"}
+                onChange={(e) => setBankAccountStatus(e.target.value === "true")}
               >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>

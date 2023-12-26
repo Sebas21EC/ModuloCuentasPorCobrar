@@ -2,40 +2,37 @@ import React, { useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config"; // Importa la variable global
 
-
 function AddBankAccountModal({ show, onClose, onLoad }) {
-  const [number, setNumber] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankName, setBankName] = useState("");
-  const [name, setName] = useState("");
-  const [details, setDetails] = useState("");
-  const [status, setStatus] = useState(true);
+  const [bankAccountName, setBankAccountName] = useState("");
+  const [bankAccountDetails, setBankAccountDetails] = useState("");
+  const [bankAccountStatus, setBankAccountStatus] = useState(true);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log({
-        number,
-        bankName,
-        name,
-        details,
-        status
-      });
-    
+      bankAccountNumber,
+      bankName,
+      bankAccountName,
+      bankAccountDetails,
+      bankAccountStatus,
+    });
+
     try {
-
-
       await axios.post(`${API_BASE_URL}/BankAccount`, {
-        number: number,
+        bankAccountNumber: bankAccountNumber,
         bankName: bankName,
-        name: name,
-        details: details,
-        status: status,
+        bankAccountName: bankAccountName,
+        bankAccountDetails: bankAccountDetails,
+        bankAccountStatus: bankAccountStatus,
       });
       alert("Bank Account Registration Successfully");
-      setNumber("");
+      setBankAccountNumber("");
       setBankName("");
-      setName("");
-      setDetails("");
-      setStatus(true);
+      setBankAccountName("");
+      setBankAccountDetails("");
+      setBankAccountStatus(true);
       onLoad();
       onClose();
     } catch (err) {
@@ -67,12 +64,12 @@ function AddBankAccountModal({ show, onClose, onLoad }) {
           <div className="modal-body">
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Account Number</label>
+                <label>Bank Account Number</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
+                  value={bankAccountNumber}
+                  onChange={(e) => setBankAccountNumber(e.target.value)}
                 />
               </div>
               <div className="form-group">
@@ -85,29 +82,29 @@ function AddBankAccountModal({ show, onClose, onLoad }) {
                 />
               </div>
               <div className="form-group">
-                <label>Name</label>
+                <label>Bank Account Name</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={bankAccountName}
+                  onChange={(e) => setBankAccountName(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <label>Details</label>
+                <label>Bank  Account Details</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
+                  value={bankAccountDetails}
+                  onChange={(e) => setBankAccountDetails(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <label>Status</label>
+                <label>Bank Account Status</label>
                 <select
                   className="form-control"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
+                  value={bankAccountStatus}
+                  onChange={(e) => setBankAccountStatus(e.target.value)}
                 >
                   <option value={true}>Active</option>
                   <option value={false}>Inactive</option>

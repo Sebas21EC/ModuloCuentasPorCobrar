@@ -45,7 +45,7 @@ function BankAccountCrud() {
 
   return (
     <div>
-      <h1>Bank Account Details</h1>
+      <h1>Bank Account CRUD</h1>
       <button
         type="button"
         className="btn btn-success"

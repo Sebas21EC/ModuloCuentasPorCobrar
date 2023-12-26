@@ -1,6 +1,5 @@
 using AccountsReceivableModule.DTOs.BankAccount;
 using AccountsReceivableModule.Models;
-using AccountsReceivableModule.Models.BankAccount;
 using AccountsReceivableModule.Services.BankAccountService;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +25,10 @@ namespace AccountsReceivableModule.Controllers
             return Ok(await _bankAccountService.Get());
         }
 
-        [HttpGet("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string accountId)
+        [HttpGet("{bankAccountId}")]
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string bankAccountId)
         {
-            var response = await _bankAccountService.GetById(accountId);
+            var response = await _bankAccountService.GetById(bankAccountId);
             if (response.Data == null)
             {
                 return NotFound(response);
@@ -55,8 +54,8 @@ namespace AccountsReceivableModule.Controllers
             return Ok(response);
         }
 
-        [HttpPut("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update(string accountId, [FromBody] UpdateBankAccountDto bankAccount)
+        [HttpPut("{bankAccountId}")]
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update(string bankAccountId, [FromBody] UpdateBankAccountDto bankAccount)
         {
             if (!ModelState.IsValid)
             {
@@ -64,7 +63,7 @@ namespace AccountsReceivableModule.Controllers
                 return BadRequest(ModelState);
             }
 
-            var response = await _bankAccountService.Update(accountId, bankAccount);
+            var response = await _bankAccountService.Update(bankAccountId, bankAccount);
 
             if (response.Data == null)
             {
@@ -73,10 +72,10 @@ namespace AccountsReceivableModule.Controllers
 
             return Ok(response);
         }
-        [HttpDelete("{accountId}")]
-        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string accountId)
+        [HttpDelete("{bankAccountId}")]
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string bankAccountId)
         {
-            var response = await _bankAccountService.Delete(accountId);
+            var response = await _bankAccountService.Delete(bankAccountId);
             if (response.Data == null)
             {
                 return NotFound(response);

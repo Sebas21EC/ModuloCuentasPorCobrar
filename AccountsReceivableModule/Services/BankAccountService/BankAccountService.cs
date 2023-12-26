@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AccountsReceivableModule.Data;
 using AccountsReceivableModule.DTOs.BankAccount;
 using AccountsReceivableModule.Models;
-using AccountsReceivableModule.Models.BankAccount;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +32,7 @@ namespace AccountsReceivableModule.Services.BankAccountService
                 string newAccountId = GenerateNewAccountId();
 
                 var bankAccount = _mapper.Map<BankAccount>(newBankAccount);
-                bankAccount.Id = newAccountId;
+                bankAccount.BankAccountId = newAccountId;
 
                 _context.BankAccounts.Add(bankAccount);
                 await _context.SaveChangesAsync();
@@ -55,12 +54,12 @@ namespace AccountsReceivableModule.Services.BankAccountService
         private string GenerateNewAccountId()
         {
             // Consulta la base de datos para obtener el último ID creado
-            var lastBankAccount = _context.BankAccounts.OrderByDescending(b => b.Id).FirstOrDefault();
+            var lastBankAccount = _context.BankAccounts.OrderByDescending(b => b.BankAccountId).FirstOrDefault();
 
             if (lastBankAccount != null)
             {
                 // Obtén el número del último ID y aumenta en uno
-                int lastNumber = int.Parse(lastBankAccount.Id.Split('-').Last());
+                int lastNumber = int.Parse(lastBankAccount.BankAccountId.Split('-').Last());
                 int newNumber = lastNumber + 1;
 
                 // Formatea el nuevo ID
@@ -89,7 +88,7 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
             try
             {
-                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
+                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.BankAccountId == accountId);
 
                 if (bankAccount == null)
                 {
@@ -117,7 +116,7 @@ namespace AccountsReceivableModule.Services.BankAccountService
 
             try
             {
-                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
+                var bankAccount = await _context.BankAccounts.FirstOrDefaultAsync(x => x.BankAccountId == accountId);
 
                 if (bankAccount == null)
                 {
@@ -150,7 +149,7 @@ namespace AccountsReceivableModule.Services.BankAccountService
             try
             {
                 // Buscar la cuenta bancaria por su ID en la base de datos.
-                var bankAccountToUpdate = await _context.BankAccounts.FirstOrDefaultAsync(x => x.Id == accountId);
+                var bankAccountToUpdate = await _context.BankAccounts.FirstOrDefaultAsync(x => x.BankAccountId == accountId);
 
                 if (bankAccountToUpdate == null)
                 {
@@ -160,11 +159,11 @@ namespace AccountsReceivableModule.Services.BankAccountService
                 }
 
                 // Actualizar los campos de la cuenta bancaria con los nuevos valores.
-                bankAccountToUpdate.Number = updateBankAccount.Number;
+                bankAccountToUpdate.BankAccountNumber = updateBankAccount.BankAccountNumber;
                 bankAccountToUpdate.BankName = updateBankAccount.BankName;
-                bankAccountToUpdate.Name = updateBankAccount.Name;
-                bankAccountToUpdate.Details = updateBankAccount.Details;
-                bankAccountToUpdate.Status = updateBankAccount.Status;
+                bankAccountToUpdate.BankAccountName = updateBankAccount.BankAccountName;
+                bankAccountToUpdate.BankAccountDetails = updateBankAccount.BankAccountDetails;
+                bankAccountToUpdate.BankAccountStatus = updateBankAccount.BankAccountStatus;
 
                 // Guardar los cambios en la base de datos.
                 await _context.SaveChangesAsync();

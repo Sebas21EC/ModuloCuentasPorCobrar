@@ -12,12 +12,12 @@ function BankAccountTable({
         {bankAccounts.map((bankAccount) => (
           <tr key={bankAccount.id}>
             {/* Celdas de datos */}
-            <td>{bankAccount.id}</td>
-            <td>{bankAccount.number}</td>
+            <td>{bankAccount.bankAccountId}</td>
+            <td>{bankAccount.bankAccountNumber}</td>
             <td>{bankAccount.bankName}</td>
-            <td>{bankAccount.name}</td>
-            <td>{bankAccount.details}</td>
-            <td>{bankAccount.status ? "Active" : "Inactive"}</td>
+            <td>{bankAccount.bankAccountName}</td>
+            <td>{bankAccount.bankAccountDetails}</td>
+            <td>{bankAccount.bankAccountStatus ? "Active" : "Inactive"}</td>
             <td>
               {/* Botones de Editar y Eliminar */}
               <button

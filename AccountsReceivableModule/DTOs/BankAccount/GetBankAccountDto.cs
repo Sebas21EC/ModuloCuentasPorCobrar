@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AccountsReceivableModule.Models.BankAccount;
+using AccountsReceivableModule.Models;
 
 namespace AccountsReceivableModule.DTOs.BankAccount
 {
     public class GetBankAccountDto
     {
-        public string? Id { get; set; }
-        public string? Number { get; private set; }
+        public string? BankAccountId { get; set; }
+        public string? BankAccountNumber { get; private set; }
         public string? BankName { get; private set; }
-        public string? Name { get; private set; }
-        public string? Details { get; private set; }
-        public bool Status { get; private set; }
+        public string? BankAccountName { get; private set; }
+        public string? BankAccountDetails { get; private set; }
+        public bool BankAccountStatus { get; private set; }
 
     }
 }
