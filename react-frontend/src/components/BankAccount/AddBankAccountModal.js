@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import API_BASE_URL from "../../config"; // Importa la variable global
+import API_BASE_URL from "../../config"; // Asegúrate de que API_BASE_URL tenga la URL correcta
+
 
 function AddBankAccountModal({ show, onClose, onLoad }) {
   const [bankAccountNumber, setBankAccountNumber] = useState("");

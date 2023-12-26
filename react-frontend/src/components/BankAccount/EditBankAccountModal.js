@@ -45,8 +45,6 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
 
       // Llama a la función onLoad para recargar la lista de cuentas bancarias
       onLoad();
-
-      // Cierra el modal
       onClose();
     } catch (err) {
       // Maneja errores aquí, muestra una alerta de error o realiza alguna otra acción
