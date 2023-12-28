@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AccountsReceivableModule.Models;
-
 namespace AccountsReceivableModule.DTOs.BankAccount
 {
     public class GetBankAccountDto

@@ -1,10 +1,15 @@
-﻿namespace AccountsReceivableModule.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace AccountsReceivableModule.Models
 {
     public class Invoice
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int InvoiceId { get; set; }
-        public string CustomerId { get; set; }
-        public string InvoiceDetail { get; set; }
+        public string? CustomerId { get; set; }
+        public string? InvoiceDetail { get; set; }
         public decimal AmountDue { get; set; }
         public decimal AmountPaid { get; set; }
 
@@ -12,7 +17,7 @@
         public decimal Balance => AmountDue - AmountPaid;
 
         // Relaciones
-        public virtual Customer Customer { get; set; }
-        public virtual ICollection<PaymentDetail> PaymentDetails { get; set; }
+        public virtual Customer? Customer { get; set; }
+        public virtual ICollection<PaymentDetail>? PaymentDetails { get; set; }
     }
 }

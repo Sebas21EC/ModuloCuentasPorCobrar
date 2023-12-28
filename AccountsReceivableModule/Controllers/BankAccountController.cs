@@ -22,6 +22,7 @@ namespace AccountsReceivableModule.Controllers
         
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Get()
         {
+
             return Ok(await _bankAccountService.Get());
         }
 
