@@ -1,7 +1,12 @@
-﻿namespace AccountsReceivableModule.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace AccountsReceivableModule.Models
 {
     public class Payment
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string PaymentId { get; set; }
         public string CustomerId { get; set; }
         public string BankAccountId { get; set; }

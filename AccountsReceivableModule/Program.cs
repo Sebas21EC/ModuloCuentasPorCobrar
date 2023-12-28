@@ -1,6 +1,7 @@
 using AccountsReceivableModule.Data;
 using AccountsReceivableModule.Services;
 using AccountsReceivableModule.Services.BankAccountService;
+using AccountsReceivableModule.Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
 
 //var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -19,7 +20,9 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        //Inyección de dependencias de los modelos de servicios
         builder.Services.AddScoped<IBankAccountService, BankAccountService>();
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
 
         builder.Services.AddHttpClient<ExternalApiService>();
         builder.Services.AddSingleton<ExternalApiService>();

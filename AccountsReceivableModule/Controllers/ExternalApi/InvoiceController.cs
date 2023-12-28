@@ -14,20 +14,20 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
             _externalApiService = externalApiService;
         }
 
-        [HttpGet("invoices")]
-        public async Task<IActionResult> GetInvoices()
-        {
-            try
-            {
-                var invoices = await _externalApiService.GetInvoicesAsync();
-                // Procesa los datos de las facturas según lass necesidades
-                return Ok(invoices);
-            }
-            catch (Exception ex)
-            {
-                // Manejo de errores 
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //[HttpGet("invoices")]
+        //public async Task<IActionResult> GetInvoices()
+        //{
+        //    try
+        //    {
+        //       // var invoices = await _externalApiService.GetInvoicesAsync();
+        //        // Procesa los datos de las facturas según lass necesidades
+        //        return Ok(invoices);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Manejo de errores 
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
     }
 }
