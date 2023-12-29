@@ -24,12 +24,7 @@ namespace AccountsReceivableModule
             // CreateMap<UpdateCustomerDto, ExternalCustomer>();
 
 
-            CreateMap<Customer, GetCustomerDto>()
-                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.name))
-                .ForMember(dest => dest.username, opt => opt.MapFrom(src => src.username))
-                .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.email))
-                .ForMember(dest => dest.phone, opt => opt.MapFrom(src => src.phone))
-                .ForMember(dest => dest.website, opt => opt.MapFrom(src => src.website));
+            CreateMap<Customer, GetCustomerDto>();
 
         }
     }
