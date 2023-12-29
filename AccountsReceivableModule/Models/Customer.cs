@@ -8,13 +8,18 @@ namespace AccountsReceivableModule.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonProperty("id")]
+        [JsonProperty("cus_dni")]
         public string? CustomerId { get; set; }
-        public string? name { get; set; }
-        public string? username { get; set; }
-        public string? email { get; set; }
-        public string? phone { get; set; }
-        public string? website { get; set; }
+        [JsonProperty("cus_name")]
+        public string? CustomerName { get; set; }
+        [JsonProperty("cus_address")]
+        public string? CustomerAddress { get; set; }
+        [JsonProperty("cus_phone")]
+        public string? CustomerPhone { get; set; }
+        [JsonProperty("cus_email")]
+        public string? CustomerEmail { get; set; }
+        [JsonProperty("cus_status")]
+        public string? CustomerStatus { get; set; }
 
         // Relaciones
         public virtual ICollection<Invoice>? Invoices { get; set; }

@@ -2,7 +2,10 @@ using AccountsReceivableModule.Data;
 using AccountsReceivableModule.Services;
 using AccountsReceivableModule.Services.BankAccountService;
 using AccountsReceivableModule.Services.CustomerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 //var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -26,6 +29,23 @@ internal class Program
 
         builder.Services.AddHttpClient<ExternalApiService>();
         builder.Services.AddSingleton<ExternalApiService>();
+
+
+        // Configura el HttpClient
+        builder.Services.AddHttpClient<AuthService>();
+        // Registra AuthService como un servicio
+        builder.Services.AddScoped<AuthService>();
+
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:7002/api/Auth/login"; // URL de la API externa que emite los tokens
+        options.Audience = "MiAppWeb"; // Puede ser el identificador de tu propia aplicación
+    });
+
+
+
 
 
         builder.Services.AddCors(options =>
@@ -54,10 +74,18 @@ internal class Program
 
         app.UseCors("CorsPolicy");
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
 
+
+        //app.UseEndpoints(endpoints =>
+        //{
+        //    endpoints.MapControllers();
+        //});
+
         app.Run();
+
     }
 }

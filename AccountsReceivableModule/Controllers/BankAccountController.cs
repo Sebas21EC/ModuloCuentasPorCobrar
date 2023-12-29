@@ -1,12 +1,14 @@
 using AccountsReceivableModule.DTOs.BankAccount;
 using AccountsReceivableModule.Models;
 using AccountsReceivableModule.Services.BankAccountService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountsReceivableModule.Controllers
 {
     [ApiController]
+   // [Authorize] // Esto restringirá el acceso a usuarios autenticados
     [Route("api/[controller]")]
     public class BankAccountController : ControllerBase
     {
