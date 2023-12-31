@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AccountsReceivableModule.DTOs.Customer
+namespace AccountsReceivableModule.DTOs
 {
     public class UpdateCustomerDto
     {

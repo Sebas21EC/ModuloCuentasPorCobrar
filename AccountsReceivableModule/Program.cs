@@ -1,7 +1,5 @@
 using AccountsReceivableModule.Data;
 using AccountsReceivableModule.Services;
-using AccountsReceivableModule.Services.BankAccountService;
-using AccountsReceivableModule.Services.CustomerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +24,7 @@ internal class Program
         //Inyección de dependencias de los modelos de servicios
         builder.Services.AddScoped<IBankAccountService, BankAccountService>();
         builder.Services.AddScoped<ICustomerService, CustomerService>();
+        builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
         builder.Services.AddHttpClient<ExternalApiService>();
         builder.Services.AddSingleton<ExternalApiService>();

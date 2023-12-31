@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace AccountsReceivableModule.Models
 {
@@ -7,7 +8,7 @@ namespace AccountsReceivableModule.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int InvoiceId { get; set; }
+        public string? InvoiceId { get; set; }
         public string? CustomerId { get; set; }
         public string? InvoiceDetail { get; set; }
         public decimal AmountDue { get; set; }

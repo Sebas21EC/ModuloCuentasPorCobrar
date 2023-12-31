@@ -1,7 +1,7 @@
-using AccountsReceivableModule.DTOs.BankAccount;
+using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 
-namespace AccountsReceivableModule.Services.BankAccountService
+namespace AccountsReceivableModule.Services
 {
     public interface IBankAccountService
     {
