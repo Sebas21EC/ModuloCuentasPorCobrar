@@ -1,15 +1,19 @@
 import React from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 
 function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
-  
   const handleConfirmDelete = async () => {
-   // console.log("bankAccountId: " + account.bankAccountId);
     try {
       await axios.delete(`${API_BASE_URL}/BankAccount/${account.bankAccountId}`);
-      console.log("bankAccountId: " + account.bankAccountId);
-      alert("Bank Account deleted Successfully");
+     // alert("Cuenta bancaria eliminada exitosamente");
       onLoad(); // Cargar los datos nuevamente después de la eliminación
     } catch (err) {
       alert(err);
@@ -22,43 +26,21 @@ function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
     onClose(); // Cancelar la eliminación y cerrar el modal
   };
 
-  if (!show) {
-    return null;
-  }
-
   return (
-    <div
-      className={`modal ${show ? "show" : ""}`}
-      tabIndex="-1"
-      role="dialog"
-      style={{ display: show ? "block" : "none" }}
-    >
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Delete Bank Account</h5>
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close"
-              onClick={onClose}
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <p>Are you sure you want to delete this bank account?</p>
-            <button className="btn btn-danger" onClick={handleConfirmDelete}>
-              Yes, Delete
-            </button>
-            <button className="btn btn-secondary" onClick={handleCancelDelete}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Dialog open={show} onClose={onClose}>
+      <DialogTitle>Eliminar Cuenta Bancaria</DialogTitle>
+      <DialogContent>
+        <p>¿Estás seguro de que deseas eliminar esta cuenta bancaria?</p>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelDelete} color="primary">
+          Cancelar
+        </Button>
+        <Button onClick={handleConfirmDelete} color="secondary">
+          Sí, Eliminar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

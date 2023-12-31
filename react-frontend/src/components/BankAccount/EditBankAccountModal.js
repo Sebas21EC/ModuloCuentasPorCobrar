@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import API_BASE_URL from "../../config"; // Asegúrate de que API_BASE_URL tenga la URL correcta
+import API_BASE_URL from "../../config";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 function EditBankAccountModal({ show, onClose, account, onLoad }) {
   const [bankAccountNumber, setBankAccountNumber] = useState("");
@@ -34,7 +46,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
       });
 
       // Muestra una alerta de éxito
-      alert("Bank Account Updated Successfully");
+      //alert("Cuenta bancaria actualizada exitosamente");
 
       // Limpia los campos del formulario
       setBankAccountNumber("");
@@ -53,81 +65,70 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
   };
 
   return (
-    <div
-      className={`modal ${show ? "show" : ""}`}
-      tabIndex="-1"
-      role="dialog"
-      style={{ display: show ? "block" : "none" }}
-    >
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Edit Bank Account</h5>
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close"
-              onClick={onClose}
+    <Dialog open={show} onClose={onClose}>
+      <DialogTitle>Editar Cuenta Bancaria</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Número de cuenta bancaria"
+            value={bankAccountNumber}
+            onChange={(e) => {
+              
+              const value = e.target.value.replace(/\D/g, ''); 
+              setBankAccountNumber(value);
+            }}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            type="number" 
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
+          />
+          <TextField
+            label="Nombre de la entidad bancaria"
+            value={bankName}
+            onChange={(e) => setBankName(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+          />
+          <TextField
+            label="Nombre del propietario de la cuenta bancaria"
+            value={bankAccountName}
+            onChange={(e) => setBankAccountName(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+          />
+          <TextField
+            label="Detalle de la cuenta bancaria"
+            value={bankAccountDetails}
+            onChange={(e) => setBankAccountDetails(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+          />
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel>Estado</InputLabel>
+            <Select
+              value={bankAccountStatus}
+              onChange={(e) => setBankAccountStatus(e.target.value)}
+              label="Estado de la cuenta bancaria"
             >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Bank Account Number</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={bankAccountNumber}
-                  onChange={(e) => setBankAccountNumber(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Bank Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Bank Account Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={bankAccountName}
-                  onChange={(e) => setBankAccountName(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Bank Account Details</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={bankAccountDetails}
-                  onChange={(e) => setBankAccountDetails(e.target.value)}
-                />
-              </div>
-              <select
-                className="form-control"
-                value={bankAccountStatus ? "true" : "false"}
-                onChange={(e) => setBankAccountStatus(e.target.value === "true")}
-              >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
-
-              <button type="submit" className="btn btn-primary">
-                Save
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+              <MenuItem value={true}>Activo</MenuItem>
+              <MenuItem value={false}>Inactivo</MenuItem>
+            </Select>
+          </FormControl>
+          <DialogActions>
+            <Button onClick={onClose} color="primary">
+              CANCELAR
+            </Button>
+            <Button type="submit" color="primary">
+              GUARDAR
+            </Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
