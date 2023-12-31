@@ -15,6 +15,6 @@ namespace AccountsReceivableModule.Models
         public bool BankAccountStatus { get;  set; }
 
         // Relación con Payments
-        public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Payment>? Payments { get; set; }
     }
 }

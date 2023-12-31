@@ -1,33 +1,35 @@
-﻿using AccountsReceivableModule.Services;
+﻿using AccountsReceivableModule.DTOs;
+using AccountsReceivableModule.Models;
+using AccountsReceivableModule.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AccountsReceivableModule.Controllers.ExternalApi
+namespace AccountsReceivableModule.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly ExternalApiService _externalApiService;
+        private readonly IInvoiceService _invoiceService;
 
-        public InvoiceController(ExternalApiService externalApiService)
+        public InvoiceController(IInvoiceService invoiceService)
         {
-            _externalApiService = externalApiService;
+            _invoiceService = invoiceService;
         }
 
-        //[HttpGet("invoices")]
-        //public async Task<IActionResult> GetInvoices()
-        //{
-        //    try
-        //    {
-        //       // var invoices = await _externalApiService.GetInvoicesAsync();
-        //        // Procesa los datos de las facturas según lass necesidades
-        //        return Ok(invoices);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Manejo de errores 
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+
+        [HttpGet]
+
+        public async Task<ActionResult<ServiceResponse<GetInvoiceDto>>> Get()
+        {
+            try
+            {
+                return Ok(await _invoiceService.GetAll());
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores 
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

@@ -1,14 +1,14 @@
-﻿namespace AccountsReceivableModule.DTOs.Customer
+﻿using Newtonsoft.Json;
+
+namespace AccountsReceivableModule.DTOs
 {
     public class UpdateCustomerDto
     {
-        public string CustomerId { get; set; }
-        public string? name { get; set; }
-        public string? username { get; set; }
-        public string? email { get; set; }
-        public string? address { get; set; }
-        public string? phone { get; set; }
-        public string? website { get; set; }
-        public string? company { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAddress { get; set; }
+        public string? CustomerPhone { get; set; }
+        public string? CustomerEmail { get; set; }
+        public string? CustomerStatus { get; set; }
     }
 }

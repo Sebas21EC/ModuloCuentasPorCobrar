@@ -9,7 +9,7 @@ namespace AccountsReceivableModule.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PaymentDetailId { get; set; }
         public string? PaymentId { get; set; }
-        public int InvoiceId { get; set; }
+        public string? InvoiceId { get; set; }
         public decimal AmountApplied { get; set; }
 
         // Relaciones
