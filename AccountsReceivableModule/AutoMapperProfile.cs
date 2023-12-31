@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AccountsReceivableModule.DTOs.BankAccount;
-using AccountsReceivableModule.DTOs.Customer;
+using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 using AutoMapper;
 
@@ -19,12 +18,10 @@ namespace AccountsReceivableModule
             CreateMap<UpdateBankAccountDto, BankAccount>();
 
             //CUSTOMER
-            //CreateMap<Customer, GetCustomerDto>() ;
-            //CreateMap<CreateCustomerDto, ExternalCustomer>();
-            // CreateMap<UpdateCustomerDto, ExternalCustomer>();
-
-
             CreateMap<Customer, GetCustomerDto>();
+
+            //INvoice
+            CreateMap<Invoice, GetInvoiceDto>();
 
         }
     }

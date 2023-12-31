@@ -1,6 +1,6 @@
-﻿using AccountsReceivableModule.DTOs.Customer;
+﻿using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
-using AccountsReceivableModule.Services.CustomerService;
+using AccountsReceivableModule.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountsReceivableModule.Controllers.ExternalApi
@@ -40,7 +40,7 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
         }
 
 
-        [HttpGet("customers")]
+        [HttpGet]
 
         public async Task<ActionResult<ServiceResponse<GetCustomerDto>>> Get()
         {

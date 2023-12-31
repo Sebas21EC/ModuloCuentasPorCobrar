@@ -1,4 +1,4 @@
-namespace AccountsReceivableModule.DTOs.BankAccount
+namespace AccountsReceivableModule.DTOs
 {
     public class GetBankAccountDto
     {

@@ -1,9 +1,9 @@
 ﻿using AccountsReceivableModule.Data;
-using AccountsReceivableModule.DTOs.Customer;
+using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 using AutoMapper;
 
-namespace AccountsReceivableModule.Services.CustomerService
+namespace AccountsReceivableModule.Services
 {
     public class CustomerService : ICustomerService
     {

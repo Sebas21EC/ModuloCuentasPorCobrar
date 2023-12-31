@@ -21,7 +21,7 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
         {
             try
             {
-                var token = await _authService.LoginAsync(model.Username, model.Password);
+                string token = await _authService.LoginAsync(model.Username, model.Password);
 
                 if (!string.IsNullOrEmpty(token))
                 {

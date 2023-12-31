@@ -1,8 +1,7 @@
-﻿using AccountsReceivableModule.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 
 namespace AccountsReceivableModule.Services
@@ -19,13 +18,13 @@ namespace AccountsReceivableModule.Services
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _token = string.Empty;
         }
 
         //get y set token
-        public string Token
+        public string getToken()
         {
-            get { return _token; }
-            set { _token = value; }
+            return _token;
         }
 
 
@@ -43,7 +42,9 @@ namespace AccountsReceivableModule.Services
             var loginModel = new
             {
                 Username = username,
-                Password = password
+                Password = password,
+                //obtener mi ip de sistema
+                IP = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString()
             };
 
             var jsonContent = JsonConvert.SerializeObject(loginModel);

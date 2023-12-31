@@ -1,7 +1,7 @@
-﻿using AccountsReceivableModule.DTOs.Customer;
+﻿using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 
-namespace AccountsReceivableModule.Services.CustomerService
+namespace AccountsReceivableModule.Services
 {
     public interface ICustomerService
     {

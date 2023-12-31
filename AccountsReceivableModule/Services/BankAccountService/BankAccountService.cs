@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AccountsReceivableModule.Data;
-using AccountsReceivableModule.DTOs.BankAccount;
+using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace AccountsReceivableModule.Services.BankAccountService
+namespace AccountsReceivableModule.Services
 {
     public class BankAccountService : IBankAccountService
     {
