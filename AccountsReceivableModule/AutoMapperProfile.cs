@@ -23,6 +23,17 @@ namespace AccountsReceivableModule
             //INvoice
             CreateMap<Invoice, GetInvoiceDto>();
 
+            //PAYMENT
+            CreateMap<Payment, GetPaymentDto>();
+            CreateMap<CreatePaymentDto, Payment>();
+            CreateMap<UpdatePaymentDto, Payment>();
+
+            //PaymentDetail
+            CreateMap<PaymentDetail, GetPaymentDetailDto>();
+            CreateMap<CreatePaymentDetailDto, PaymentDetail>();
+            CreateMap<UpdatePaymentDetailDto, PaymentDetail>();
+
+
         }
     }
 }

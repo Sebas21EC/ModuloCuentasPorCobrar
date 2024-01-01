@@ -10,6 +10,6 @@ namespace AccountsReceivableModule.Services
         Task<ServiceResponse<List<GetBankAccountDto>>> Create(CreateBankAccountDto bankAccount);
         Task<ServiceResponse<GetBankAccountDto>> Update(string bankAccountId, UpdateBankAccountDto bankAccount);
         Task<ServiceResponse<List<GetBankAccountDto>>> Delete(string bankAccountId);
-        
+
     }
 }

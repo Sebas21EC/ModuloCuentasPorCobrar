@@ -25,6 +25,8 @@ internal class Program
         builder.Services.AddScoped<IBankAccountService, BankAccountService>();
         builder.Services.AddScoped<ICustomerService, CustomerService>();
         builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
+        builder.Services.AddScoped<IPaymentDetailService, PaymentDetailService>();
 
         builder.Services.AddHttpClient<ExternalApiService>();
         builder.Services.AddSingleton<ExternalApiService>();
@@ -36,12 +38,12 @@ internal class Program
         builder.Services.AddScoped<AuthService>();
 
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "https://localhost:7002/api/Auth/login"; // URL de la API externa que emite los tokens
-        options.Audience = "MiAppWeb"; // Puede ser el identificador de tu propia aplicación
-    });
+    //    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    //.AddJwtBearer(options =>
+    //{
+    //    options.Authority = "https://localhost:7002/api/Auth/login"; // URL de la API externa que emite los tokens
+    //    options.Audience = "MiAppWeb"; // Puede ser el identificador de tu propia aplicación
+    //});
 
 
 

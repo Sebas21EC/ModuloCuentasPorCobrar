@@ -2,6 +2,7 @@
 using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccountsReceivableModule.Services
 {
@@ -88,6 +89,29 @@ namespace AccountsReceivableModule.Services
         public Task<ServiceResponse<GetCustomerDto>> Update(string customerId, UpdateCustomerDto customer)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ServiceResponse<List<GetInvoiceDto>>> GetInvoicesByCustomer(string customerId)
+        {
+            var serviceResponse = new ServiceResponse<List<GetInvoiceDto>>();
+
+            try
+            {
+
+                //obetner todas las facturas del cliente
+                var invoices = await _context.Invoices
+                    .Where(i => i.CustomerId == customerId)
+                    .ToListAsync();
+
+                serviceResponse.Data = _mapper.Map<List<GetInvoiceDto>>(invoices);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Error al obtener las facturas: {ex.Message}";
+            }
+
+            return serviceResponse;
         }
     }
 }

@@ -41,7 +41,6 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
 
 
         [HttpGet]
-
         public async Task<ActionResult<ServiceResponse<GetCustomerDto>>> Get()
         {
             try { 
@@ -53,5 +52,40 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
                 return StatusCode(500, ex.Message);
             }
         }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ServiceResponse<GetCustomerDto>>> Get(string id)
+        {
+            try
+            {
+                var response = await _customerService.GetById(id);
+                if (response.Data == null)
+                {
+                    return NotFound(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores 
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("invoices/{customerId}")]
+        public async Task<ActionResult<ServiceResponse<List<GetInvoiceDto>>>> GetInvoicesByCustomer(string customerId)
+        {
+            try
+            {
+                return Ok(await _customerService.GetInvoicesByCustomer(customerId));
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores 
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

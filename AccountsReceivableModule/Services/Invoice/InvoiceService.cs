@@ -25,7 +25,7 @@ namespace AccountsReceivableModule.Services
             decimal amountDue = 0;
             foreach (var invoiceDetailes in externalInvoices.Details)
             {
-                amountDue += invoiceDetailes.TotalAmount + (invoiceDetailes.TotalAmount * (invoiceDetailes.Iva/100));
+                amountDue += invoiceDetailes.TotalAmount + (invoiceDetailes.TotalAmount * (invoiceDetailes.Iva / 100));
             }
             return amountDue;
         }
@@ -64,7 +64,7 @@ namespace AccountsReceivableModule.Services
 
                 var externalInvoiceDtos = _mapper.Map<List<GetInvoiceDto>>(transformedInvoices);
 
-                var localInvoiceCount =  _context.Invoices.Count();
+                var localInvoiceCount = _context.Invoices.Count();
 
                 if (localInvoiceCount != externalInvoiceDtos.Count)
                 {
@@ -117,6 +117,48 @@ namespace AccountsReceivableModule.Services
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = $"Error al obtener la factura: {ex.Message}";
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetInvoiceDto>>> GetInvoicesByCustomer(string customerId)
+        {
+            var serviceResponse = new ServiceResponse<List<GetInvoiceDto>>();
+
+            try
+            {
+
+                //busqueda por id customer y que ek balance sea mayor a cero
+                var invoices = await _context.Invoices.Where(i => i.CustomerId == customerId).ToListAsync();
+
+                serviceResponse.Data = _mapper.Map<List<GetInvoiceDto>>(invoices);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Error al obtener las facturas: {ex.Message}";
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetInvoiceDto>>> GetInvoicesByCustomerAndBalance(string customerId)
+        {
+            var serviceResponse = new ServiceResponse<List<GetInvoiceDto>>();
+
+            try
+            {
+
+                //busqueda por id customer y que ek balance sea mayor a cero
+                var invoices = await _context.Invoices.Where(i => i.CustomerId == customerId && (i.Balance > (decimal)(0.0))).ToListAsync();
+
+                serviceResponse.Data = _mapper.Map<List<GetInvoiceDto>>(invoices);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Error al obtener las facturas: {ex.Message}";
             }
 
             return serviceResponse;

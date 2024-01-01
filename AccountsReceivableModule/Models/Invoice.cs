@@ -15,7 +15,7 @@ namespace AccountsReceivableModule.Models
         public decimal AmountPaid { get; set; }
 
         // Calculated property
-        public decimal Balance => AmountDue - AmountPaid;
+        public decimal Balance { get; set; }
 
         // Relaciones
         public virtual Customer? Customer { get; set; }
