@@ -3,7 +3,7 @@ import axios from "axios";
 import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
 import EditBankAccountModal from "./EditBankAccountModal";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import DeleteBankAccountModal from "./DeleteBankAccountModal";
 import API_BASE_URL from "../../config";
 import {
   Button,
@@ -91,7 +91,18 @@ function BankAccountCrud() {
       <Box my={4}>
         <Grid container justifyContent="space-between">
           <Grid item>
-            <Typography variant="h4" component="div">
+          <Typography 
+        variant="h2" 
+        component="div" 
+        gutterBottom 
+        sx={{ 
+          color: '#1976d2', 
+          textTransform: 'uppercase', 
+          fontWeight: 'bold', 
+          mb: 4,
+          textAlign: 'center'
+        }}
+      >
               Cuentas Bancarias Existentes
             </Typography>
           </Grid>
@@ -147,7 +158,7 @@ function BankAccountCrud() {
         account={selectedAccount}
         onLoad={Load}
       />
-      <DeleteConfirmationModal
+      <DeleteBankAccountModal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         account={selectedAccount}
