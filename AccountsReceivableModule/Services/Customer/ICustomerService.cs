@@ -10,6 +10,8 @@ namespace AccountsReceivableModule.Services
         Task<ServiceResponse<List<GetCustomerDto>>> Create(CreateCustomerDto customer);
         Task<ServiceResponse<GetCustomerDto>> Update(string customerId, UpdateCustomerDto customer);
         //Task<ServiceResponse<List<GetCustomerDto>>> Delete(string customerId);
+        //todas las invoices del customer
+        Task<ServiceResponse<List<GetInvoiceDto>>> GetInvoicesByCustomer(string customerId);
 
     }
 }
