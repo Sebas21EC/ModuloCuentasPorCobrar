@@ -1,6 +1,6 @@
 
 // src/App.js
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Corrected import statement
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from './components/Sidebar/Home';
@@ -10,10 +10,23 @@ import PaymentRegistration from './components/Payments/PaymentRegistration';
 // Import other components you want to route to
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    // Esta función simula el inicio de sesión
+    setIsLoggedIn(true);
+  };
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <Router> {/* BrowserRouter aliased as Router */}
       <div style={{ display: 'flex', height: '100%' }}>
-        <Sidebar />
+        <Sidebar onLogout={handleLogout}  />
         <div style={{ flexGrow: 1, overflowY: 'auto', padding: '2rem' }}>
           <Routes> {/* Routes component wraps Route definitions */}
             <Route path="/" element={<Home/>} />

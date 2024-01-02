@@ -42,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const Sidebar = () => {
+const Sidebar = ({onLogout}) => {
   return (
     <ThemeProvider theme={theme}>
       <List sx={{
@@ -67,10 +67,11 @@ const Sidebar = () => {
           <ListItemIcon><AccountBalanceIcon /></ListItemIcon>
           <ListItemText primary="Cuentas Bancarias" />
         </ListItem>
-        <ListItem button component={Link} to="/logout">
-          <ListItemIcon><ExitToAppIcon /></ListItemIcon>
-          <ListItemText primary="Cerrar sesión" />
-        </ListItem>
+        <ListItem button onClick={onLogout}>
+        <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+        <ListItemText primary="Cerrar sesión" />
+      </ListItem>
+
       </List>
     </ThemeProvider>
   );

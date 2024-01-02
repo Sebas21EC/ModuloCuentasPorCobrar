@@ -42,17 +42,20 @@ function PaymentRegistration() {
         const response = await axios.get(`${API_BASE_URL}/BankAccount`);
         // Asumiendo que la API responde con un objeto que tiene una propiedad 'data'
         // y que dentro de 'data' hay un arreglo de cuentas, cada una con una propiedad 'bankName'.
-        const bankNames = response.data.data.map(account => account.bankName);
-        setBankAccounts(bankNames);
+        const bankAccounts = response.data.data.map(account => ({
+          bankName: account.bankName,
+          bankDetails: `${account.bankAccountNumber} - ${account.bankAccountDetails}`
+        }));
+        setBankAccounts(bankAccounts);
       } catch (err) {
         console.error(err);
         alert('Hubo un error al cargar las cuentas bancarias.');
       }
     };
-  
+
     loadBankAccounts();
   }, []);
-  
+
   const pendingInvoices = [
     { id: 1, description: 'Factura 1', amountDue: 50 },
     { id: 2, description: 'Factura 2', amountDue: 5 },
@@ -89,26 +92,37 @@ function PaymentRegistration() {
     setCustomerSearchError('');
     try {
       const response = await axios.get(`${API_BASE_URL}/Customer/${customerID}`);
-      setCustomerName(response.data.customerName); // Asegúrate de ajustar esto a tu estructura de datos
+      const customerData = response.data; // Asegúrate de ajustar esto a tu estructura de datos
+      
+      if (customerData) {
+        setCustomerName(customerData.customerName);
+        setCustomerID(customerData.customerID); // Guardar el ID
+        alert(`Hola, tú eres: ${customerName}`);
+       
+      } else {
+        setCustomerSearchError('Cliente no encontrado.');
+        setCustomerName(''); // Limpiar el nombre
+      }
     } catch (error) {
       console.error('Error searching customer:', error);
-      setCustomerSearchError('No se encontró el cliente.');
-      setCustomerName('');
+      setCustomerSearchError('Error al buscar el cliente.');
+      setCustomerName(''); // Limpiar el nombre
     }
   };
+  
 
   // Resto de los manejadores de eventos...
 
   return (
     <Container maxWidth="md">
-      <Typography 
-        variant="h2" 
-        component="div" 
-        gutterBottom 
-        sx={{ 
-          color: '#1976d2', 
-          textTransform: 'uppercase', 
-          fontWeight: 'bold', 
+      <Typography
+        variant="h2"
+        component="div"
+        gutterBottom
+        sx={{
+          color: '#1976d2',
+          textTransform: 'uppercase',
+          fontWeight: 'bold',
           mb: 4,
           textAlign: 'center'
         }}
@@ -116,36 +130,36 @@ function PaymentRegistration() {
         REGISTRO DE PAGO
       </Typography>
       <form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-  <Grid item xs={12}>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <TextField
-        label="Identificación del Cliente"
-        value={customerID}
-        onChange={(e) => setCustomerID(e.target.value)}
-        sx={{ flexGrow: 3 }}
-        margin="normal"
-      />
-      <Button
-        onClick={handleCustomerSearch}
-        variant="contained"
-        sx={{ flexGrow: 2 }}
-      >
-        Buscar Cliente
-      </Button>
-    </Box>
-    {customerName && (
-      <Typography variant="body1">
-        Nombre del Cliente: {customerName}
-      </Typography>
-    )}
-    {customerSearchError && (
-      <Typography variant="body2" color="error">
-        {customerSearchError}
-      </Typography>
-    )}
-  </Grid>
-</Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <TextField
+                label="Identificación del Cliente"
+                value={customerID}
+                onChange={(e) => setCustomerID(e.target.value)}
+                sx={{ flexGrow: 3 }}
+                margin="normal"
+              />
+              <Button
+                onClick={handleCustomerSearch}
+                variant="contained"
+                sx={{ flexGrow: 2 }}
+              >
+                Buscar Cliente
+              </Button>
+            </Box>
+            {customerName && (
+              <Typography variant="body1">
+                Nombre del Cliente: {customerName}
+              </Typography>
+            )}
+            {customerSearchError && (
+              <Typography variant="body2" color="error">
+                {customerSearchError}
+              </Typography>
+            )}
+          </Grid>
+        </Grid>
         <Grid container spacing={3}>
           {/* Campos de formulario para detalles del pago */}
           <Grid item xs={12} sm={6}>
@@ -198,8 +212,8 @@ function PaymentRegistration() {
                 variant="outlined"
               >
                 {bankAccounts.map((account) => (
-                  <MenuItem key={account} value={account}>
-                    {account}
+                  <MenuItem key={account.bankName} value={account.bankName}>
+                    {`${account.bankName} - ${account.bankDetails}`}
                   </MenuItem>
                 ))}
               </Select>

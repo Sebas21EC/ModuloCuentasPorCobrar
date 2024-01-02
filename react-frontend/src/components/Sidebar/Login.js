@@ -14,14 +14,11 @@ import {
 
 const theme = createTheme();
 
-function Login() {
+function Login({onLogin}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Lógica de inicio de sesión aquí
-    console.log(username, password);
-  };
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -32,7 +29,7 @@ function Login() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '80vh',
+          height: '100vh',
           backgroundColor: '#CDDDEF',
         }}
       >
@@ -61,7 +58,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button sx={{ marginTop: 3, bgcolor: 'white', color: 'black' }} variant="contained" onClick={handleLogin}>
+            <Button sx={{ marginTop: 3, bgcolor: 'white', color: 'black' }} variant="contained" onClick={onLogin}>
               Iniciar Sesión
             </Button>
           </CardContent>
