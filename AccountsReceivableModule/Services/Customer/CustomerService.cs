@@ -81,9 +81,31 @@ namespace AccountsReceivableModule.Services
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<GetCustomerDto>> GetById(string customerId)
+        public async Task<ServiceResponse<GetCustomerDto>> GetById(string customerId)
         {
-            throw new NotImplementedException();
+    
+            var serviceResponse = new ServiceResponse<GetCustomerDto>();
+            try { 
+            
+                var customer = _context.Customers.Find(customerId);
+                if (customer != null)
+                {
+                    var customerDto = _mapper.Map<GetCustomerDto>(customer);
+                    serviceResponse.Data = customerDto;
+                }
+                else
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Cliente no encontrado.";
+                }
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = $"Error al obtener el cliente: {ex.Message}";
+            }
+            return serviceResponse;
+        
         }
 
         public Task<ServiceResponse<GetCustomerDto>> Update(string customerId, UpdateCustomerDto customer)
