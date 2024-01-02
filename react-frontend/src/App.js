@@ -24,7 +24,9 @@ function App() {
   }
 
   return (
+    
     <Router> {/* BrowserRouter aliased as Router */}
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
       <div style={{ display: 'flex', height: '100%' }}>
         <Sidebar onLogout={handleLogout}  />
         <div style={{ flexGrow: 1, overflowY: 'auto', padding: '2rem' }}>
