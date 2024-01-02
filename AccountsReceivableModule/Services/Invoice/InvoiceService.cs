@@ -25,7 +25,8 @@ namespace AccountsReceivableModule.Services
             decimal amountDue = 0;
             foreach (var invoiceDetailes in externalInvoices.Details)
             {
-                amountDue += invoiceDetailes.TotalAmount + (invoiceDetailes.TotalAmount * (invoiceDetailes.Iva / 100));
+                //amountDue += invoiceDetailes.TotalAmount + (invoiceDetailes.TotalAmount * (invoiceDetailes.Iva / 100));
+                amountDue += invoiceDetailes.TotalAmount;
             }
             return amountDue;
         }
