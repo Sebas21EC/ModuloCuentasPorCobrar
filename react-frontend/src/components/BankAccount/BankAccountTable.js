@@ -17,7 +17,7 @@ function BankAccountTable({ bankAccounts, onEditClick, onDeleteClick }) {
       columns={columns}
       data={bankAccounts}
       onEditClick={onEditClick}
-      onDeleteClick={onDeleteClick}
+      //onDeleteClick={onDeleteClick}
     />
   );
 }

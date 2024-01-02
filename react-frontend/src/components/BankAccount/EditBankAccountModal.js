@@ -77,15 +77,21 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
         type="number"
         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
       />
-      <TextField
-        name="bankName"
-        label="Nombre de la entidad bancaria"
-        variant="outlined"
-        margin="normal"
-        fullWidth
-        onChange={handleInputChange}
-        value={formData.bankName}
-      />
+      
+      <FormControl fullWidth variant="outlined" margin="normal">
+        <InputLabel>Nombre de la entidad bancaria</InputLabel>
+        <Select
+          name="bankName"
+          label="Nombre de la entidad bancaria"
+          onChange={handleInputChange}
+          value={formData.bankName}
+        >
+          <MenuItem value={"BANCO DEL PICHINCHA"}>Banco del Pichincha</MenuItem>
+              <MenuItem value={"BANCO DEL AUSTRO"}>Banco del Austro</MenuItem>
+              <MenuItem value={"BANCO DEL PACÍFICO"}>Banco del Pacífico</MenuItem>
+              <MenuItem value={"BANCO DE GUAYAQUIL"}>Banco de Guayaquil</MenuItem>
+        </Select>
+      </FormControl>
       <TextField
         name="bankAccountName"
         label="Nombre del propietario de la cuenta bancaria"
@@ -95,15 +101,20 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
         onChange={handleInputChange}
         value={formData.bankAccountName}
       />
-      <TextField
-        name="bankAccountDetails"
-        label="Detalle de la cuenta bancaria"
-        variant="outlined"
-        margin="normal"
-        fullWidth
-        onChange={handleInputChange}
-        value={formData.bankAccountDetails}
-      />
+      
+       <FormControl fullWidth variant="outlined" margin="normal">
+        <InputLabel>Detalle de la cuenta bancaria</InputLabel>
+        <Select
+          name="bankAccountDetails"
+          label="Detalle de la cuenta bancaria"
+          onChange={handleInputChange}
+          value={formData.bankAccountDetails}
+        >
+          <MenuItem value={"AHORROS"}>Ahorros</MenuItem>
+              <MenuItem value={"CORRIENTE"}>Corriente</MenuItem>
+        </Select>
+      </FormControl>
+      
       <FormControl fullWidth variant="outlined" margin="normal">
         <InputLabel>Estado</InputLabel>
         <Select

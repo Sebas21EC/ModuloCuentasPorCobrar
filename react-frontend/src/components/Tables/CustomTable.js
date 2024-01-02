@@ -37,9 +37,9 @@ function CustomTable({ columns, data, onEditClick, onDeleteClick }) {
                    <IconButton color="primary" onClick={() => onEditClick(item)}>
                      <EditIcon />
                    </IconButton>
-                   <IconButton color="error" onClick={() => onDeleteClick(item)}>
+                   {/* <IconButton color="error" onClick={() => onDeleteClick(item)}>
                      <DeleteIcon />
-                   </IconButton>
+                   </IconButton> */}
                  </>
                }
              </TableCell>

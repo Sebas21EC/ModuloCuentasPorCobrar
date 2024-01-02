@@ -23,7 +23,7 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
   const [bankAccountStatus, setBankAccountStatus] = useState(true);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const handleNotificationClose = () => {
-    setNotificationOpen(false); 
+    setNotificationOpen(false);
   };
 
   const handleSubmit = async (event) => {
@@ -32,7 +32,7 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
     const uppercaseBankName = bankName.toUpperCase();
     const uppercaseBankAccountName = bankAccountName.toUpperCase();
     const uppercaseBankAccountDetails = bankAccountDetails.toUpperCase();
-    
+
 
     try {
       await axios.post(`${API_BASE_URL}/BankAccount`, {
@@ -55,7 +55,7 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
     } catch (err) {
       alert(err);
     }
-   
+
 
   };
 
@@ -68,25 +68,32 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
             label="Número de cuenta bancaria"
             value={bankAccountNumber}
             onChange={(e) => {
-              
-              const value = e.target.value.replace(/\D/g, ''); 
+
+              const value = e.target.value.replace(/\D/g, '');
               setBankAccountNumber(value);
             }}
             fullWidth
             variant="outlined"
             margin="normal"
-            type="number" 
-            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
+            type="number"
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
           />
 
-          <TextField
-            label="Nombre de la entidad bancaria"
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
-            fullWidth
-            variant="outlined"
-            margin="normal"
-          />
+
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel>Nombre de la entidad bancaria</InputLabel>
+            <Select
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              label="Nombre de la entidad bancaria"
+            >
+              <MenuItem value={"BANCO DEL PICHINCHA"}>Banco del Pichincha</MenuItem>
+              <MenuItem value={"BANCO DEL AUSTRO"}>Banco del Austro</MenuItem>
+              <MenuItem value={"BANCO DEL PACÍFICO"}>Banco del Pacífico</MenuItem>
+              <MenuItem value={"BANCO DE GUAYAQUIL"}>Banco de Guayaquil</MenuItem>
+            </Select>
+          </FormControl>
+          
           <TextField
             label="Nombre del propietario de la cuenta bancaria"
             value={bankAccountName}
@@ -95,20 +102,23 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
             variant="outlined"
             margin="normal"
           />
-          <TextField
-            label="Detalle de la cuenta bancaria"
-            value={bankAccountDetails}
-            onChange={(e) => setBankAccountDetails(e.target.value)}
-            fullWidth
-            variant="outlined"
-            margin="normal"
-          />
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel>Detalles de la cuenta bancaria</InputLabel>
+            <Select
+              value={bankAccountDetails}
+              onChange={(e) => setBankAccountDetails(e.target.value)}
+              label="Detalles de la cuenta bancaria"
+            >
+              <MenuItem value={"AHORROS"}>Ahorros</MenuItem>
+              <MenuItem value={"CORRIENTE"}>Corriente</MenuItem>
+            </Select>
+          </FormControl>
           <FormControl fullWidth variant="outlined" margin="normal">
             <InputLabel>Estado</InputLabel>
             <Select
               value={bankAccountStatus}
               onChange={(e) => setBankAccountStatus(e.target.value)}
-              label="Bank Account Status"
+              label="Estado de la cuenta bancaria"
             >
               <MenuItem value={true}>Activo</MenuItem>
               <MenuItem value={false}>Inactivo</MenuItem>
@@ -122,13 +132,13 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
               GUARDAR
             </Button>
           </DialogActions>
-          
+
         </form>
-        
+
       </DialogContent>
-      
+
     </Dialog>
-    
+
   );
 }
 

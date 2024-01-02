@@ -5,7 +5,8 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:5126',  // URL del primer servidor de backend
+      //target: 'http://localhost:5126',
+      target: 'http://sebas159-001-site1.htempurl.com',  // URL del primer servidor de backend
       changeOrigin: true,
     })
   );
