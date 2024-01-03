@@ -7,6 +7,6 @@
         public string? InvoiceDetail { get; set; }
         public decimal AmountDue { get; set; }
         public decimal AmountPaid { get; set; }
-        public decimal Balance { get; set; }
+        public decimal Balance { get; }
     }
 }
