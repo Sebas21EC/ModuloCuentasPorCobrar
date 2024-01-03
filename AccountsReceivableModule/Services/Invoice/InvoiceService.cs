@@ -154,7 +154,7 @@ namespace AccountsReceivableModule.Services
                 //busqueda por id customer y que ek balance sea mayor a cero
                 //var invoices = await _context.Invoices.Where(i => i.CustomerId == customerId && (i.Balance > (decimal)(0.0))).ToListAsync();
                 //obtener solo el balance calculado de la factura
-                var invoices = await _context.Invoices.Where(i => i.CustomerId == customerId && (i.Balance > (decimal)(0.0))).ToListAsync();
+                var invoices = await _context.Invoices.Where(i => i.CustomerId == customerId && ((i.AmountDue - i.AmountPaid) > (decimal)(0.0))).ToListAsync();
 
                 serviceResponse.Data = _mapper.Map<List<GetInvoiceDto>>(invoices);
             }
