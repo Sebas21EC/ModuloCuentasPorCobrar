@@ -67,8 +67,8 @@ namespace AccountsReceivableModule.Services
                     if (invoice == null)
                     {
                         // Maneja la lógica para facturas no encontradas
-                       // continue;
-                       serviceResponse.Success = false;
+                        // continue;
+                        serviceResponse.Success = false;
                         serviceResponse.Message = "La factura no fue encontrada.";
                         return serviceResponse;
 
@@ -102,7 +102,7 @@ namespace AccountsReceivableModule.Services
                 }
 
                 // Actualiza el monto total del pago general
-                 payment.PaymentAmount -= paymentDetails.Sum(pd => pd.AmountApplied);
+                // payment.PaymentAmount -= paymentDetails.Sum(pd => pd.AmountApplied);
 
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = true;
@@ -139,9 +139,20 @@ namespace AccountsReceivableModule.Services
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<GetPaymentDetailDto>> GetById(int paymentDetailById)
+        public async Task<ServiceResponse<GetPaymentDetailDto>> GetById(int paymentDetailById)
         {
-            throw new NotImplementedException();
+            var serviceResponse = new ServiceResponse<GetPaymentDetailDto>();
+            try
+            {
+                var paymentDetail = paymentDetails.FirstOrDefault(c => c.PaymentDetailId == paymentDetailById);
+                serviceResponse.Data = _mapper.Map<GetPaymentDetailDto>(paymentDetail);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+            return serviceResponse;
         }
 
         public Task<ServiceResponse<GetPaymentDetailDto>> Update(int paymentDetailId, UpdatePaymentDetailDto paymentDetail)
