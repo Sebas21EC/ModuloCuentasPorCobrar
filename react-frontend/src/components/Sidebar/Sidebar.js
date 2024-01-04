@@ -11,6 +11,7 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 
 // Define your custom theme
 const theme = createTheme({
@@ -62,6 +63,10 @@ const Sidebar = ({onLogout}) => {
         <ListItem button component={Link} to="/pagos">
           <ListItemIcon><PaymentsIcon /></ListItemIcon>
           <ListItemText primary="Pagos" />
+        </ListItem>
+        <ListItem button component={Link} to="/detalles-pagos">
+          <ListItemIcon><ReceiptIcon /></ListItemIcon>
+          <ListItemText primary="Detalles de Pagos" />
         </ListItem>
         <ListItem button component={Link} to="/cuentas-bancarias">
           <ListItemIcon><AccountBalanceIcon /></ListItemIcon>

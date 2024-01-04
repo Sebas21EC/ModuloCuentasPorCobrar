@@ -4,6 +4,7 @@ import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
 import EditBankAccountModal from "./EditBankAccountModal";
 import DeleteBankAccountModal from "./DeleteBankAccountModal";
+import RowDetailsModal from "../Modals/RowDetailsModal";
 import API_BASE_URL from "../../config";
 import {
   Button,
@@ -21,6 +22,7 @@ function BankAccountCrud() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [searchText, setSearchText] = useState("");
+  
 
   useEffect(() => {
     Load();
@@ -47,6 +49,17 @@ function BankAccountCrud() {
   const handleDeleteClick = (account) => {
     setSelectedAccount(account);
     setShowDeleteModal(true);
+  };
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewClick = (item) => {
+    setSelectedRow(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
   const handleSearch = async (searchText) => {
     try {
@@ -146,6 +159,7 @@ function BankAccountCrud() {
         bankAccounts={bankAccounts}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
+        onViewClick={handleViewClick}
       />
       <AddBankAccountModal
         open={showAddModal}
@@ -158,12 +172,17 @@ function BankAccountCrud() {
         account={selectedAccount}
         onLoad={Load}
       />
-      <DeleteBankAccountModal
+      <RowDetailsModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        rowDetails={selectedRow}
+      />
+      {/* <DeleteBankAccountModal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         account={selectedAccount}
         onLoad={Load}
-      />
+      /> */}
     </Container>
   );
 }

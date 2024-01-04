@@ -44,7 +44,7 @@ function Home() {
             </CardContent>
             <CardMedia
               component="img"
-              image="/total-cuentas.jpg" // Reemplaza con la URL de tu imagen
+              image="cuentas.jpg" // Reemplaza con la URL de tu imagen
               alt="Total de Cuentas"
             />
             <AccountBalanceWalletIcon sx={{ fontSize: 48, color: '#1976d2', p: 2 }} />
@@ -64,7 +64,7 @@ function Home() {
             </CardContent>
             <CardMedia
               component="img"
-              image="/ultimas-actividades.jpg" // Reemplaza con la URL de tu imagen
+              image="cuentas.jpg" // Reemplaza con la URL de tu imagen
               alt="Últimas Actividades"
             />
             <AssessmentIcon sx={{ fontSize: 48, color: '#1976d2', p: 2 }} />
@@ -84,7 +84,7 @@ function Home() {
             </CardContent>
             <CardMedia
               component="img"
-              image="/gestion-clientes.jpg" // Reemplaza con la URL de tu imagen
+              image="cuentas.jpg" // Reemplaza con la URL de tu imagen
               alt="Gestión de Clientes"
             />
             <PeopleIcon sx={{ fontSize: 48, color: '#1976d2', p: 2 }} />
