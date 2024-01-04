@@ -37,7 +37,6 @@ function App() {
             <Route path="/detalles-pagos" element={<PaymentDetailsCrud/>} />
             <Route path="/cuentas-bancarias" element={<BankAccountCrud />} />
             <Route path="/payment-registration" element={<PaymentsRegistration />} />
-            {/* Add more routes as needed */}
           </Routes>
         </div>
       </div>
