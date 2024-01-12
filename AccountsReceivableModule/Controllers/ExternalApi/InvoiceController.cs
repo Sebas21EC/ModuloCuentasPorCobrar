@@ -34,7 +34,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<GetInvoiceDto>>> Get(int id)
+        public async Task<ActionResult<ServiceResponse<GetInvoiceDto>>> Get(string id)
         {
             try
             {

@@ -85,9 +85,21 @@ public class PaymentService : IPaymentService
         return response;
     }
 
-    public Task<ServiceResponse<GetPaymentDto>> GetById(string id)
+    public async Task<ServiceResponse<GetPaymentDto>> GetById(string id)
     {
-        throw new NotImplementedException();
+       var response = new ServiceResponse<GetPaymentDto>();
+        try
+        {
+            var dbPayment = _context.Payments.FirstOrDefault(c => c.PaymentId == id);
+            response.Data = _mapper.Map<GetPaymentDto>(dbPayment);
+
+        }
+        catch (Exception ex)
+        {
+            response.Success = false;
+            response.Message = ex.Message;
+        }
+        return response;
     }
 
     public Task<ServiceResponse<GetPaymentDto>> Update(string paymetId, UpdatePaymentDto updatedPayment)

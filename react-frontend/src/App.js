@@ -26,6 +26,7 @@ function App() {
   }
 
   return (
+    
     <Router> {/* BrowserRouter aliased as Router */}
       <div style={{ display: 'flex', height: '100%' }}>
         <Sidebar onLogout={handleLogout}  />
