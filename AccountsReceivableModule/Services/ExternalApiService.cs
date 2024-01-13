@@ -81,5 +81,7 @@ namespace AccountsReceivableModule.Services
             // Handle errors appropriately
             throw new HttpRequestException($"Error: {response.StatusCode}");
         }
+
+     
     }
 }

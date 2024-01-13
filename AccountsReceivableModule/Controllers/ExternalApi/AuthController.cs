@@ -9,30 +9,36 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
 
-        public AuthController(AuthService authService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestModel model)
+        public async Task<ActionResult<ServiceResponse<AuthResponse>>> Login([FromBody] AuthRequest authRequest)
         {
             try
             {
-                string token = await _authService.LoginAsync(model.Username, model.Password);
-
-                if (!string.IsNullOrEmpty(token))
-                {
-                    return Ok(new { Token = token });
-                }
-
-                return Unauthorized("Inicio de sesión incorrecto.");
+                return Ok(await _authService.Login(authRequest));
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<ActionResult<ServiceResponse<AuthResponse>>> Logout()
+        {
+            try
+            {
+                return Ok(await _authService.Logout());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
