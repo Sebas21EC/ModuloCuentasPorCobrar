@@ -27,6 +27,9 @@ internal class Program
         builder.Services.AddScoped<IInvoiceService, InvoiceService>();
         builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IPaymentDetailService, PaymentDetailService>();
+        builder.Services.AddHttpClient<IAuthService>();
+        builder.Services.AddSingleton<IAuthService, AuthService>();
+
 
         builder.Services.AddHttpClient<ExternalApiService>();
         builder.Services.AddSingleton<ExternalApiService>();
@@ -36,16 +39,6 @@ internal class Program
         builder.Services.AddHttpClient<AuthService>();
         // Registra AuthService como un servicio
         builder.Services.AddScoped<AuthService>();
-
-
-    //    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //.AddJwtBearer(options =>
-    //{
-    //    options.Authority = "https://localhost:7002/api/Auth/login"; // URL de la API externa que emite los tokens
-    //    options.Audience = "MiAppWeb"; // Puede ser el identificador de tu propia aplicación
-    //});
-
-
 
 
 

@@ -1,12 +1,13 @@
 using AccountsReceivableModule.DTOs;
 using AccountsReceivableModule.Models;
 using AccountsReceivableModule.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountsReceivableModule.Controllers
 {
     [ApiController]
-   // [Authorize] // Esto restringirá el acceso a usuarios autenticados
+    [FunctionAuthorize("AR-LOGIN")]
     [Route("api/[controller]")]
     public class BankAccountController : ControllerBase
     {
@@ -19,14 +20,24 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet]
-        
+        [FunctionAuthorize("AR-BANK-ACCOUNTS-READ")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Get()
         {
-
-            return Ok(await _bankAccountService.Get());
+            try { 
+                var response = await _bankAccountService.Get();
+                if (response.Data == null)
+                {
+                    return NotFound(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized("Usuario no autenticado");
+            }
         }
 
-
+        [FunctionAuthorize("AR-BANK-ACCOUNTS-READ")]
         [HttpGet("{bankAccountId}")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetById(string bankAccountId)
         {
@@ -40,6 +51,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpPost]
+        [FunctionAuthorize("AR-BANK-ACCOUNTS-CREATE")]
         public async Task<ActionResult<ServiceResponse<List<GetBankAccountDto>>>> Create([FromBody] CreateBankAccountDto newBankAccount)
         {
             if (!ModelState.IsValid)
@@ -60,6 +72,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpPut("{bankAccountId}")]
+        [FunctionAuthorize("AR-BANK-ACCOUNTS-UPDATE")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Update(string bankAccountId, [FromBody] UpdateBankAccountDto bankAccount)
         {
             if (!ModelState.IsValid)
@@ -80,6 +93,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpDelete("{bankAccountId}")]
+        [FunctionAuthorize("AR-BANK-ACCOUNTS-DELETE")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Delete(string bankAccountId)
         {
             var response = await _bankAccountService.Delete(bankAccountId);
