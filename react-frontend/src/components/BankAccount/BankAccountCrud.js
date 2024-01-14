@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../axiosSettings";
 import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
 import EditBankAccountModal from "./EditBankAccountModal";
 import DeleteBankAccountModal from "./DeleteBankAccountModal";
 import RowDetailsModal from "../Modals/RowDetailsModal";
-import API_BASE_URL from "../../config";
+import { API_BASE_URL, API_AUDIT_URL } from "../../config";
 import {
   Button,
   Container,
@@ -22,7 +22,6 @@ function BankAccountCrud() {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [searchText, setSearchText] = useState("");
-  
 
   useEffect(() => {
     Load();
@@ -31,6 +30,32 @@ function BankAccountCrud() {
   const Load = async () => {
     try {
       const result = await axios.get(`${API_BASE_URL}/BankAccount`);
+
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Bank Accounts",
+          description: `User: ${username}`,
+          ip: "192.168.0.102",
+          date: formattedDate,
+          functionName: "AR-BANK-ACCOUNTS-READ",
+          observation: ` ${username} user read data from bank accounts`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const dataResponseAudit = await responseAudit.json();
+      console.log(dataResponseAudit);
+
       setBankAccounts(result.data.data);
     } catch (err) {
       alert(err);
@@ -65,19 +90,19 @@ function BankAccountCrud() {
     try {
       // Obtén el valor del campo de búsqueda
       const bankAccountIdToSearch = searchText.trim().toUpperCase().trim(); // Elimina espacios en blanco alrededor
-  
+
       // Verifica si el campo de búsqueda está vacío
       if (!bankAccountIdToSearch) {
         // Si está vacío, carga todas las cuentas bancarias
         Load();
         return;
       }
-  
+
       // Realiza la solicitud GET con el ID de cuenta bancaria en la URL
       const result = await axios.get(
         `${API_BASE_URL}/BankAccount/${bankAccountIdToSearch}`
       );
-  
+
       // Verifica si se encontraron datos
       if (result.data) {
         // Actualiza el estado con los datos encontrados
@@ -86,74 +111,70 @@ function BankAccountCrud() {
         alert("La cuenta bancaria no fue encontrada.");
       }
     } catch (err) {
-      
       console.error(err);
     }
   };
-  
+
   // Manejar cambios en el campo de búsqueda
   const handleSearchTextChange = (e) => {
     const searchText = e.target.value;
     setSearchText(searchText);
     handleSearch(searchText);
   };
-  
 
   return (
     <Container>
       <Box my={4}>
         <Grid container justifyContent="space-between">
           <Grid item>
-          <Typography 
-        variant="h2" 
-        component="div" 
-        gutterBottom 
-        sx={{ 
-          color: '#1976d2', 
-          textTransform: 'uppercase', 
-          fontWeight: 'bold', 
-          mb: 4,
-          textAlign: 'center'
-        }}
-      >
+            <Typography
+              variant="h2"
+              component="div"
+              gutterBottom
+              sx={{
+                color: "#1976d2",
+                textTransform: "uppercase",
+                fontWeight: "bold",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
               Cuentas Bancarias Existentes
             </Typography>
           </Grid>
-         
         </Grid>
       </Box>
       <Box my={2}>
-  <Grid container spacing={2}>
-    <Grid item xs={6}> {/* Cambiado a xs={9} para 3/4 del ancho */}
-    <TextField
-          fullWidth
-          label="Buscar por código de cuenta bancaria"
-          variant="outlined"
-          value={searchText}
-          onChange={handleSearchTextChange} 
-        />
-    </Grid>
-    <Grid item xs={3}> {/* Cambiado a xs={3} para 1/4 del ancho */}
-      <Button
-        fullWidth
-        variant="contained"
-        onClick={Load}
-      >
-         TODAS LAS CUENTAS BANCARIAS
-      </Button>
-    </Grid>
-    <Grid item xs={3}>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleAddClick}
-      >
-       Agregar Cuenta Bancaria
-      </Button>
-    </Grid>
-    
-  </Grid>
-</Box>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {" "}
+            {/* Cambiado a xs={9} para 3/4 del ancho */}
+            <TextField
+              fullWidth
+              label="Buscar por código de cuenta bancaria"
+              variant="outlined"
+              value={searchText}
+              onChange={handleSearchTextChange}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            {" "}
+            {/* Cambiado a xs={3} para 1/4 del ancho */}
+            <Button fullWidth variant="contained" onClick={Load}>
+              TODAS LAS CUENTAS BANCARIAS
+            </Button>
+          </Grid>
+          <Grid item xs={3}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleAddClick}
+            >
+              Agregar Cuenta Bancaria
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
 
       <BankAccountTable
         bankAccounts={bankAccounts}

@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "./authActions";
 import { saveToSessionStorage } from "./SessionStorage"; // Implementa esta función
-import API_BASE_URL from "../../config";
+import { API_BASE_URL, API_AUDIT_URL } from "../../config";
+// import API_AUDIT_URL from "../../config";
+
 import {
   Container,
   Card,
@@ -27,7 +29,6 @@ function Login({ onLogin }) {
   const handleLogin = async () => {
     try {
       // Realiza la solicitud HTTP al servidor de autenticación y obtén los datos de autenticación
-      console.log(`${API_BASE_URL}/auth/login`)
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         body: JSON.stringify({ username, password }),
@@ -46,19 +47,41 @@ function Login({ onLogin }) {
         // Almacena el token y las funciones en Redux
         dispatch(loginSuccess(token, functions));
 
-        // Almacena el token en el almacenamiento de sesión
-        saveToSessionStorage("token", token);
+        // hacer un JSON para almacenar en el session storage
+        const dataSession = {
+          token,
+          functions,
+          username,
+          email,
+        };
 
         // Almacena las funciones en el almacenamiento de sesión (si es necesario)
-        saveToSessionStorage("functions", JSON.stringify(functions));
+        saveToSessionStorage("responseLogin", dataSession);
 
-        // Almacena el nombre de usuario en el almacenamiento de sesión (si es necesario)
-        saveToSessionStorage("username", username);
+        //Auditoria
+        const responseLogin = JSON.parse(
+          sessionStorage.getItem("responseLogin")
+        );
+        const username1 = responseLogin ? responseLogin.username : null;
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+        const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "Sesion started",
+            description: `User : ${username}`,
+            ip: "192.168.0.102",
+            date: formattedDate,
+            functionName: "AR-LOGIN",
+            observation: `${username} started session`,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        // Almacena el email en el almacenamiento de sesión (si es necesario)
-        saveToSessionStorage("email", email);
 
-        // Llama a la función de inicio de sesión proporcionada por el padre
         onLogin();
       } else {
         // Manejo de errores de inicio de sesión
@@ -72,7 +95,9 @@ function Login({ onLogin }) {
     } catch (error) {
       // Manejo de errores en caso de problemas con la solicitud
       console.error("Error en la solicitud de inicio de sesión:", error);
-      alert("Error en la solicitud de inicio de sesión, verifique las credenciales ingresadas");
+      alert(
+        "Error en la solicitud de inicio de sesión, verifique las credenciales ingresadas"
+      );
     }
   };
 

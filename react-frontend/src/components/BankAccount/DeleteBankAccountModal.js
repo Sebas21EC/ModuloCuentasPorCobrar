@@ -1,6 +1,6 @@
 import React from 'react';
-import axios from 'axios';
-import API_BASE_URL from '../../config';
+import axios from "../../axiosSettings";
+import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 import DeleteModal from '../Modals/DeleteModal'; // Asegúrate de que la ruta es correcta
 
 function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
