@@ -1,6 +1,4 @@
-//const API_BASE_URL = "http://localhost:5126/api";
-const API_BASE_URL = "http://sebas159-001-site1.htempurl.com/api";
-//const API_BASE_URL = "https://accountsreceviablemodule.azurewebsites.net/api";
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL_DESARROLLO;
+//const API_BASE_URL = process.env.REACT_APP_API_BASE_URL_PRODUCCION;
 
 export default API_BASE_URL;
