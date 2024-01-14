@@ -10,17 +10,47 @@ import PaymentsCrud from './components/Payments/PaymentsCrud';
 import PaymentsRegistration from './components/Payments/PaymentsRegistration';
 import PaymentDetailsCrud from './components/Payments/PaymentDetailsCrud';
 // Import other components you want to route to
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from './components/Sidebar/authActions'; // Importa tu acción de éxito de inicio de sesión
+import { useEffect } from 'react';
+import { logout } from './components/Sidebar/authActions'; // Importa la acción de cierre de sesión
+
+
 
 function App() {
+  const dispatch = useDispatch();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+    // Verificar si hay un token almacenado en la sessionStorage
+    const storedToken = sessionStorage.getItem('token');
+
+    if (storedToken) {
+      // El token existe en la sessionStorage, considerar al usuario como autenticado
+      dispatch(loginSuccess(storedToken, JSON.parse(sessionStorage.getItem('functions'))));
+      setIsLoggedIn(true);
+    }
+  }, [dispatch]);
+
   const handleLogin = () => {
-    // Esta función simula el inicio de sesión
     setIsLoggedIn(true);
   };
+
   const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+      // Despacha la acción de cierre de sesión
+      dispatch(logout());
+
+      // Limpia el token y las funciones de la sessionStorage
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('functions');
+      sessionStorage.removeItem('username');
+      sessionStorage.removeItem('email');
+
+      window.location.reload(); // Recarga la página para que el usuario pueda iniciar sesión nuevamente
+  
+      // Lógica adicional para redireccionar o realizar otras acciones después del cierre de sesión
+    };
+
   if (!isLoggedIn) {
     return <Login onLogin={handleLogin} />;
   }
