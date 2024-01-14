@@ -1,5 +1,6 @@
 import React from 'react';
-import CustomTable from '../Tables/CustomTable';
+//import CustomTable from '../Tables/CustomTable';
+import Table from '../Tables/Table';
 
 function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
   const columns = [
@@ -19,15 +20,17 @@ function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
   return (
     <>
       {dataIsValid ? (
-        <CustomTable
-        canEdit={false}
-  canDelete={false}
-  canView={true}
-          columns={columns}
-          data={payments}
-          onViewClick={onViewClick} // Ahora 'payments' es un array
-          // Resto de tus props, como onEditClick y onDeleteClick
-        />
+        <Table
+        columns={columns}
+        data={payments}
+        canEdit={true}
+    canDelete={true}
+    canView={true}
+    onViewClick={onViewClick} 
+    onDeleteClick={onDeleteClick}
+    onEditClick={onEditClick}
+        // Otros props como onEditClick, onDeleteClick, etc.
+      />
       ) : (
         <p>No hay datos para mostrar.</p> // O algún otro UI de carga o error.
       )}
