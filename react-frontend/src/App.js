@@ -14,6 +14,8 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from './components/Sidebar/authActions'; // Importa tu acción de éxito de inicio de sesión
 import { useEffect } from 'react';
 import { logout } from './components/Sidebar/authActions'; // Importa la acción de cierre de sesión
+import API_BASE_URL from './config';
+
 
 
 
@@ -32,11 +34,17 @@ function App() {
     }
   }, [dispatch]);
 
-  const handleLogin = () => {
+  const handleLogin =  () => {
     setIsLoggedIn(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
       // Despacha la acción de cierre de sesión
       dispatch(logout());
 
