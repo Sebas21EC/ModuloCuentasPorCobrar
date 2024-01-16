@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Corrected import statement
 import Sidebar from './components/Sidebar/Sidebar';
+import Topbar from './components/Sidebar/Topbar';
 import Home from './components/Sidebar/Home';
 import Login from './components/Sidebar/Login';
 import BankAccountCrud from './components/BankAccount/BankAccountCrud';
@@ -58,18 +59,21 @@ function App() {
   return (
     
     <Router> {/* BrowserRouter aliased as Router */}
-      <div style={{ display: 'flex', height: '100%' }}>
+   
+        <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+       
         <Sidebar onLogout={handleLogout}  />
-        <div style={{ flexGrow: 1, overflowY: 'auto', padding: '2rem' }}>
+        
+        <main style={{ flexGrow: 1, overflowY: 'auto', padding: '2rem', backgroundColor:'#EAECF9'}}>
           <Routes> {/* Routes component wraps Route definitions */}
             <Route path="/" element={<Home/>} />
             <Route path="/estado-de-cuenta" element={<Home/>} />
-            <Route path="/pagos" element={<PaymentsCrud/>} />
+            <Route path="/todos-los-pagos" element={<PaymentsCrud/>} />
             <Route path="/detalles-pagos" element={<PaymentDetailsCrud/>} />
             <Route path="/cuentas-bancarias" element={<BankAccountCrud />} />
             <Route path="/payment-registration" element={<PaymentsRegistration />} />
           </Routes>
-        </div>
+        </main>
       </div>
     </Router>
   );

@@ -4,27 +4,28 @@ import Table from '../Tables/Table';
 
 function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
   const columns = [
-    { label: 'CÓDIGO', accessor: 'paymentId' },
-    { label: 'CLIENTE ID', accessor: 'customerId' },
-    { label: 'CUENTA BANCARIA', accessor: 'bankAccountId' },
-    { label: 'DETALLE DE PAGO', accessor: 'paymentDetail' },
-    { label: 'MONTO', accessor: 'paymentAmount' },
-    { label: 'FECHA', accessor: 'paymentDate' },
-    { label: 'IMPRESO', accessor: 'isPrinted', format: (isPrinted) => isPrinted ? 'SÍ' : 'NO' },
-    { label: 'ACCIONES', accessor: 'actions' }
+    
+    { Header: 'ACCIONES', accessor: 'actions' },  
+    { Header: 'CÓDIGO', accessor: 'paymentId' },
+    { Header: 'CLIENTE ID', accessor: 'customerId' },
+    { Header: 'CUENTA BANCARIA', accessor: 'bankAccountId' },
+    { Header: 'DETALLE DE PAGO', accessor: 'paymentDetail' },
+    { Header: 'MONTO', accessor: 'paymentAmount' },
+    { Header: 'FECHA', accessor: 'paymentDate' },
+    { Header: 'IMPRESO', accessor: 'isPrinted', format: (isPrinted) => isPrinted ? 'SÍ' : 'NO' }
   ];
   
   // Asumiendo que 'payments' es ahora un array directamente
   const dataIsValid = Array.isArray(payments);
-
+  PaymentTable.columns = columns;
   return (
     <>
       {dataIsValid ? (
         <Table
         columns={columns}
         data={payments}
-        canEdit={true}
-    canDelete={true}
+        canEdit={false}
+    canDelete={false}
     canView={true}
     onViewClick={onViewClick} 
     onDeleteClick={onDeleteClick}
