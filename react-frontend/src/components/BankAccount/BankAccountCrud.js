@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../axiosSettings";
 import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
 import EditBankAccountModal from "./EditBankAccountModal";
 import RowDetailsModal from "../Modals/RowDetailsModal";
-import API_BASE_URL from "../../config";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TitleSection from '../Sidebar/TitleSection';
+import { API_BASE_URL, API_AUDIT_URL } from "../../config";
+
 import {
   Button,
   Container,
@@ -18,9 +19,11 @@ function BankAccountCrud() {
   const [bankAccounts, setBankAccounts] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+
   const [selectedAccount, setSelectedAccount] = useState(null)
   const [columns] = useState("");
   
+
 
 
   useEffect(() => {
@@ -30,6 +33,32 @@ function BankAccountCrud() {
   const Load = async () => {
     try {
       const result = await axios.get(`${API_BASE_URL}/BankAccount`);
+
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Bank Accounts",
+          description: `User: ${username}`,
+          ip: "192.168.0.102",
+          date: formattedDate,
+          functionName: "AR-BANK-ACCOUNTS-READ",
+          observation: ` ${username} user read data from bank accounts`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const dataResponseAudit = await responseAudit.json();
+      console.log(dataResponseAudit);
+
       setBankAccounts(result.data.data);
     } catch (err) {
       alert(err);
@@ -57,32 +86,20 @@ function BankAccountCrud() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  
+
   return (
     <Container>
       <Box my={4}>
         <Grid container justifyContent="space-between">
           <Grid item>
-          {/* <Typography 
-        variant="h2" 
-        component="div" 
-        gutterBottom 
-        sx={{ 
-          color: '#1976d2', 
-          textTransform: 'uppercase', 
-          fontWeight: 'bold', 
-          mb: 4,
-          textAlign: 'center'
-        }}
-      >
-              Cuentas Bancarias Existentes
-            </Typography> */}
+
+          
             <TitleSection title="Listado de Cuentas Bancarias" IconComponent={AccountBalanceIcon} />
           </Grid>
-         
         </Grid>
       </Box>
       <Box my={2}>
+
   <Grid container spacing={2}>
   <Grid item xs={3}>
       <Button
@@ -97,6 +114,8 @@ function BankAccountCrud() {
     
   </Grid>
 </Box>
+
+
 
       <BankAccountTable
         bankAccounts={bankAccounts}

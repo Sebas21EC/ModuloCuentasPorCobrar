@@ -18,7 +18,7 @@ import {
   InputAdornment,
   Box
 } from '@mui/material';
-import API_BASE_URL from "../../config";
+import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 
 function PaymentRegistration() {
 

@@ -1,4 +1,4 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL_DESARROLLO;
 //const API_BASE_URL = process.env.REACT_APP_API_BASE_URL_PRODUCCION;
-
-export default API_BASE_URL;
+const API_AUDIT_URL = process.env.REACT_APP_API_AUDIT;
+export  {API_BASE_URL, API_AUDIT_URL};
