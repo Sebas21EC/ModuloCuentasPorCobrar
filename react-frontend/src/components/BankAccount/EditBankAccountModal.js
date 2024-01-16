@@ -74,6 +74,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
         fullWidth
         onChange={handleInputChange}
         value={formData.bankAccountNumber}
+        disabled
         type="number"
         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
       />
@@ -84,6 +85,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
           name="bankName"
           label="Nombre de la entidad bancaria"
           onChange={handleInputChange}
+          disabled
           value={formData.bankName}
         >
           <MenuItem value={"BANCO DEL PICHINCHA"}>Banco del Pichincha</MenuItem>
@@ -100,6 +102,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
         fullWidth
         onChange={handleInputChange}
         value={formData.bankAccountName}
+        disabled
       />
       
        <FormControl fullWidth variant="outlined" margin="normal">
@@ -109,6 +112,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
           label="Detalle de la cuenta bancaria"
           onChange={handleInputChange}
           value={formData.bankAccountDetails}
+          disabled
         >
           <MenuItem value={"AHORROS"}>Ahorros</MenuItem>
               <MenuItem value={"CORRIENTE"}>Corriente</MenuItem>
