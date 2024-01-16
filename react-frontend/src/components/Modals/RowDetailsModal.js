@@ -1,19 +1,20 @@
-import React from 'react';
-import { Modal, Box, Typography, Grid, Button } from '@mui/material';
+import React from "react";
+import { Modal, Box, Typography, Grid, Button } from "@mui/material";
 
-function RowDetailsModal({ open, onClose, rowDetails }) {
-  // Función para transformar las claves en etiquetas legibles
-  const formatKey = (key) => {
-    // Transforma camelCase en texto legible
-    return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+function RowDetailsModal({ open, onClose, rowDetails, columns }) {
+  const getColumnName = (key) => {
+    if (Array.isArray(columns) && columns.length > 0) {
+      const column = columns.find(col => col.accessor === key);
+      return column ? column.Header : key;
+    }
+    return key;
   };
-
   const content = rowDetails ? (
     <Grid container spacing={2}>
       {Object.keys(rowDetails).map((key) => (
         <Grid item xs={12} key={key}>
           <Typography variant="body1">
-            <strong>{formatKey(key)}:</strong> {rowDetails[key]}
+            <strong>{getColumnName(key)}:</strong> {rowDetails[key]}
           </Typography>
         </Grid>
       ))}
@@ -21,6 +22,9 @@ function RowDetailsModal({ open, onClose, rowDetails }) {
   ) : (
     <Typography>No hay detalles disponibles</Typography>
   );
+
+  // Resto del código sin cambios...
+
 
   return (
     <Modal

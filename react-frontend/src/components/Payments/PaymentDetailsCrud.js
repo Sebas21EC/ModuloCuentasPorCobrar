@@ -6,19 +6,24 @@ import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 import PaymentDetailsTable from './PaymentDetailsTable';
 import RowDetailsModal from '../Modals/RowDetailsModal';
 import {
-  Button,
+
   Container,
-  Typography,
   Box,
   Grid
 } from '@mui/material';
 
-function PaymentCrud() {
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import TitleSection from '../Sidebar/TitleSection';
+function PaymentDetailsCrud() {
   const [payments, setPayments] = useState([]);
   const navigate = useNavigate();
+  const [columns,setColumns] = useState("");
 
   useEffect(() => {
     loadPayments();
+    const paymentDetailsTableColumns = PaymentDetailsTable.columns; // Accede a PaymentDetailsTable.columns
+  console.log('Payment Details Table Columns:', paymentDetailsTableColumns);
+  setColumns(paymentDetailsTableColumns);
   }, []);
 
   const loadPayments = async () => {
@@ -34,6 +39,7 @@ function PaymentCrud() {
     console.error(err);
     alert('Hubo un problema al cargar los detalles de los pagos.');
   }
+ 
 };
 
   
@@ -62,7 +68,7 @@ function PaymentCrud() {
       <Box my={4}>
         <Grid container justifyContent="space-between">
           <Grid item>
-          <Typography 
+          {/* <Typography 
         variant="h2" 
         component="div" 
         gutterBottom 
@@ -75,7 +81,9 @@ function PaymentCrud() {
         }}
       >
               Listado de pagos con sus respectivos detalles
-            </Typography>
+            </Typography> */}
+            <TitleSection title=" Listado de pagos con sus respectivos detalles" IconComponent={PriceChangeIcon} />
+
           </Grid>
          
         </Grid>
@@ -86,16 +94,17 @@ function PaymentCrud() {
       <PaymentDetailsTable
         paymentDetails={payments}
         onViewClick={handleViewClick}
-        
+        columns={columns} 
         // Pasar funciones para editar y eliminar como props
       />
       <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
         rowDetails={selectedRow}
+        columns={PaymentDetailsTable.columns} 
       />
     </Container>
   );
 }
 
-export default PaymentCrud;
+export default PaymentDetailsCrud;

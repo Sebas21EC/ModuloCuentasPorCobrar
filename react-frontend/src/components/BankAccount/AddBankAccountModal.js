@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../axiosSettings";
 import {API_BASE_URL,API_AUDIT_URL} from "../../config";
+
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +12,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  Snackbar
+  MenuItem
 } from "@mui/material";
 
 function AddBankAccountModal({ open, onClose, onLoad }) {
@@ -21,11 +21,7 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
   const [bankAccountName, setBankAccountName] = useState("");
   const [bankAccountDetails, setBankAccountDetails] = useState("");
   const [bankAccountStatus, setBankAccountStatus] = useState(true);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const handleNotificationClose = () => {
-    setNotificationOpen(false);
-  };
-
+ 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const uppercaseBankAccountNumber = bankAccountNumber.toUpperCase();

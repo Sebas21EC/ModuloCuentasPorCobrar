@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 import PaymentTable from './PaymentsTable';
-import TablePagination from '@mui/material/TablePagination';
 import RowDetailsModal from '../Modals/RowDetailsModal';
+import TitleSection from '../Sidebar/TitleSection';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import {
   Button,
   Container,
-  Typography,
   Box,
   Grid
 } from '@mui/material';
@@ -19,6 +19,7 @@ function PaymentCrud() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
   const navigate = useNavigate();
+  const [columns,setColumns] = useState("");
 
   useEffect(() => {
     // Suponiendo que cargas todos los pagos a la vez y los almacenas en el estado
@@ -31,6 +32,8 @@ function PaymentCrud() {
         alert('Hubo un problema al cargar los pagos.');
       }
     };
+    const paymentTableColumns = PaymentTable.columns;
+setColumns(paymentTableColumns);
     fetchPayments();
   }, []);
 
@@ -53,11 +56,12 @@ function PaymentCrud() {
   const currentPayments = payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
+    
     <Container>
       <Box my={4}>
         <Grid container justifyContent="space-between">
           <Grid item>
-          <Typography 
+          {/* <Typography 
         variant="h2" 
         component="div" 
         gutterBottom 
@@ -70,7 +74,8 @@ function PaymentCrud() {
         }}
       >
               Listado de pagos
-            </Typography>
+            </Typography> */}
+              <TitleSection title="Listado de Pagos" IconComponent={PriceChangeIcon} />
           </Grid>
          
         </Grid>
@@ -84,21 +89,14 @@ function PaymentCrud() {
           Agregar Pago
         </Button>
       </Box>
-      <PaymentTable payments={currentPayments} onViewClick={handleViewClick} />
+      <PaymentTable payments={currentPayments} onViewClick={handleViewClick} columns={columns} />
       <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
         rowDetails={selectedRow}
+        columns={PaymentTable.columns} 
       />
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={payments.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(event) => setRowsPerPage(parseInt(event.target.value, 10))}
-      />
+      
     </Container>
   );
 }
