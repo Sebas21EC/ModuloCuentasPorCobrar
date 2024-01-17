@@ -84,6 +84,13 @@ namespace AccountsReceivableModule.Services
                     _context.Invoices.AddRange(newInvoices);
                     await _context.SaveChangesAsync();
                 }
+                else { 
+                    //solo lee las invoices de mi base de datos
+                    var invoices = await _context.Invoices.ToListAsync();
+                    externalInvoiceDtos = _mapper.Map<List<GetInvoiceDto>>(invoices);
+
+                
+                }
 
                 serviceResponse.Data = externalInvoiceDtos;
             }

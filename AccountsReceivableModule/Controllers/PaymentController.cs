@@ -50,22 +50,22 @@ namespace AccountsReceivableModule.Controllers
             return Ok(response);
         }
 
-        //[HttpPut("{paymentId}")]
-        //public async Task<ActionResult<ServiceResponse<GetPaymentDto>>> Update(string paymentId, [FromBody] UpdatePaymentDto updatedPayment)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        // Devuelve un error 400 Bad Request con mensajes de validación
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPut("{paymentId}")]
+        public async Task<ActionResult<ServiceResponse<GetPaymentDto>>> Update(string paymentId, [FromBody] UpdatePaymentDto updatedPayment)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Devuelve un error 400 Bad Request con mensajes de validación
+                return BadRequest(ModelState);
+            }
 
-        //    var response = await _paymentService.Update(paymentId, updatedPayment);
-        //    if (response.Data == null)
-        //    {
-        //        return NotFound(response);
-        //    }
-        //    return Ok(response);
-        //}
+            var response = await _paymentService.Update(paymentId, updatedPayment);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
 
         //[HttpDelete("{paymentId}")]
         //public async Task<ActionResult<ServiceResponse<List<GetPaymentDto>>>> Delete(string paymentId)

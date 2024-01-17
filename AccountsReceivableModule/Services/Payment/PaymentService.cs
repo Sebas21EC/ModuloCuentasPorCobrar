@@ -33,6 +33,8 @@ public class PaymentService : IPaymentService
             serviceResponse.Data = await _context.Payments
                 .Select(c => _mapper.Map<GetPaymentDto>(c))
                 .ToListAsync();
+            serviceResponse.Message = "Payment created successfully.";
+            return serviceResponse;
         }
         catch (Exception ex)
         {
@@ -75,6 +77,8 @@ public class PaymentService : IPaymentService
         {
             var dbPayments = await _context.Payments.ToListAsync();
             response.Data = dbPayments.Select(c => _mapper.Map<GetPaymentDto>(c)).ToList();
+            response.Message = "Payment list successfully.";
+            response.Success = true;
 
         }
         catch (Exception ex)
@@ -92,6 +96,8 @@ public class PaymentService : IPaymentService
         {
             var dbPayment = _context.Payments.FirstOrDefault(c => c.PaymentId == id);
             response.Data = _mapper.Map<GetPaymentDto>(dbPayment);
+            response.Message = "Payment list successfully.";
+            response.Success = true;
 
         }
         catch (Exception ex)
@@ -102,9 +108,50 @@ public class PaymentService : IPaymentService
         return response;
     }
 
-    public Task<ServiceResponse<GetPaymentDto>> Update(string paymetId, UpdatePaymentDto updatedPayment)
+    public async Task<ServiceResponse<GetPaymentDto>> Update(string paymetId, UpdatePaymentDto updatedPayment)
     {
-        throw new NotImplementedException();
+
+        var response = new ServiceResponse<GetPaymentDto>();
+        try
+        {
+            //bucar el payment por su id
+            var dbPayment = _context.Payments.FirstOrDefault(c => c.PaymentId == paymetId);
+
+            if(dbPayment == null)
+            {
+                response.Success = false;
+                response.Message = "Payment not found.";
+                return response;
+            }
+
+            //actualiza los campos de payment
+            dbPayment.PaymentDate = updatedPayment.PaymentDate;
+            dbPayment.CustomerId = updatedPayment.CustomerId;
+            dbPayment.BankAccountId = updatedPayment.BankAccountId;
+            dbPayment.PaymentDetail = updatedPayment.PaymentDetail;
+            dbPayment.PaymentAmount = updatedPayment.PaymentAmount;
+            dbPayment.IsPrinted = updatedPayment.IsPrinted;
+
+            //guarda los cambios
+            await _context.SaveChangesAsync();
+
+            await _context.Entry(dbPayment).ReloadAsync();
+
+
+            response.Data = _mapper.Map<GetPaymentDto>(dbPayment);
+            response.Success = true;
+            response.Message = "Payment updated successfully.";
+            return response;
+
+
+        }
+        catch (Exception ex)
+        {
+            response.Success = false;
+            response.Message = "Ocurrio un error :(";
+            return response;
+        }
+
     }
 
     public async Task<ServiceResponse<List<GetPaymentDto>>> GetByClientAndDate(string clientId, DateTime startDate, DateTime endDate)
@@ -118,6 +165,8 @@ public class PaymentService : IPaymentService
                 .Where(c => c.CustomerId == clientId && c.PaymentDate >= startDate && c.PaymentDate <= endDate)
                 .ToListAsync();
             response.Data = dbPayments.Select(c => _mapper.Map<GetPaymentDto>(c)).ToList();
+            response.Message = "Payment list successfully.";
+            response.Success = true;
 
         }
         catch (Exception ex)
