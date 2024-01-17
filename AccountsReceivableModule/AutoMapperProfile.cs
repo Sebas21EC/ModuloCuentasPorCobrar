@@ -19,6 +19,8 @@ namespace AccountsReceivableModule
 
             //CUSTOMER
             CreateMap<Customer, GetCustomerDto>();
+            CreateMap<Customer, CustomerDto>();
+            
 
             //INvoice
             CreateMap<Invoice, GetInvoiceDto>();
@@ -32,6 +34,9 @@ namespace AccountsReceivableModule
             CreateMap<PaymentDetail, GetPaymentDetailDto>();
             CreateMap<CreatePaymentDetailDto, PaymentDetail>();
             CreateMap<UpdatePaymentDetailDto, PaymentDetail>();
+
+            //PaymentReport
+            CreateMap<StatusAccountDto, StatusAccountDto>();
 
 
         }

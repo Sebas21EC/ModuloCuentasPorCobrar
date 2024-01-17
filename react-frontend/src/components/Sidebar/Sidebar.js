@@ -62,7 +62,7 @@ const StyledDrawer = styled(Drawer)({
     },
   },
 });
-const Sidebar = () => {
+const Sidebar = ({onLogout}) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
@@ -124,7 +124,7 @@ const Sidebar = () => {
           <ListItemIcon><AccountBalanceIcon /></ListItemIcon>
           <ListItemText primary="Cuentas Bancarias" />
         </ListItem>
-        <ListItem button >
+        <ListItem button onClick={onLogout}>
         <ListItemIcon><ExitToAppIcon /></ListItemIcon>
         <ListItemText primary="Cerrar sesión" />
       </ListItem>
