@@ -51,8 +51,31 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
       };
 
       await axios.put(`${API_BASE_URL}/BankAccount/${account.bankAccountId}`, uppercaseAccount);
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Edit Bank Accounts",
+          description: `User ${username} edit data from Bank Accounts`,
+          ip: "192.168.0.102",
+          date: formattedDate,
+          functionName: "AR-BANK-ACCOUNTS-UPDATE",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
       onLoad(); // Recargar la lista de cuentas
       onClose();
+
     } catch (err) {
       console.error("Error al actualizar la cuenta bancaria:", err);
     }

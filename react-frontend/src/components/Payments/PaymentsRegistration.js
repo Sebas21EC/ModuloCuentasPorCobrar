@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import CustomerModal from '../Modals/CustomerModal';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import TitleSection from '../Sidebar/TitleSection';
+import PaymentsDetailsPDF from '../PDF/PaymentsDetailsPDF';
+
 import axios from "axios";
 import {
   Container,
@@ -18,7 +24,7 @@ import {
   InputAdornment,
   Box
 } from '@mui/material';
-import {API_BASE_URL,API_AUDIT_URL} from "../../config";
+import { API_BASE_URL, API_AUDIT_URL } from "../../config";
 
 function PaymentRegistration() {
 
@@ -42,9 +48,14 @@ function PaymentRegistration() {
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [invoicePayments, setInvoicePayments] = useState({});
   const [invoiceSelection, setInvoiceSelection] = useState([]);
+  //
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
 
   // Datos de ejemplo para cuentas bancarias y facturas pendientes
   const [bankAccounts, setBankAccounts] = useState([]);
+
 
   // ... (otros manejadores de eventos)
 
@@ -166,11 +177,30 @@ function PaymentRegistration() {
     }
   };
 
+  const handleOpenCustomerModal = () => {
+    setIsCustomerModalOpen(true);
+  };
+
+  const handleCloseCustomerModal = () => {
+    setIsCustomerModalOpen(false);
+  };
+
+  const handleSelectCustomer = (customerId, customerName) => {
+    setSelectedCustomerId(customerId);
+    setCustomerId(customerId);
+    setCustomerName(customerName);
+    console.log(customerName)
+    // Mostrar el segundo formulario cuando se encuentre el cliente
+    setShowPaymentForm(true);
+    handleCloseCustomerModal();
+  };
   //////
 
   // const handleSubmit = async (event) => {
   //   event.preventDefault();
   // };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [userWantsToPrint, setUserWantsToPrint] = useState(false);
   const handleInvoiceAmountChange = (invoiceId, amount) => {
     const newInvoicePayments = {
       ...invoicePayments,
@@ -214,13 +244,23 @@ function PaymentRegistration() {
         paymentId: paymentId,
         paymentDetails: paymentDetailsToSend,
       };
+      const detailsPDF={
+        paymentDetailsToSend,
+        customerName,
+        customerId,
+        paymentDate
+
+      }
 
       // Enviar la solicitud POST a la API
       try {
         const response = await axios.post(`${API_BASE_URL}/PaymentDetail/assign`, postData);
         console.log('Respuesta de la API:', response.data);
         // Restablecer estados, mostrar confirmación, etc.
-        navigate('/detalles-pagos');
+        setPaymentDetailsForPDF(detailsPDF);
+    setIsDialogOpen(true);
+
+
       } catch (error) {
         alert('Error: ' + error.message);
         console.error('Error al enviar detalles de pago:', error);
@@ -228,27 +268,75 @@ function PaymentRegistration() {
       }
     }
   };
-
+  const markPaymentAsPrinted = async (paymentId) => {
+    try {
+      const response = await axios.put(`/api/Payment/${paymentId}`, { isPrinted: true });
+      console.log('Pago marcado como impreso:', response.data);
+    } catch (error) {
+      console.error('Error al marcar el pago como impreso:', error);
+      // Manejar el error, mostrar mensaje al usuario, etc.
+    }
+  };
+  const handlePrintConfirmation = (shouldPrint) => {
+    setIsDialogOpen(false); // Cierra el diálogo independientemente de la decisión
+    if (shouldPrint) {
+      // Aquí llamas a la función para generar el PDF
+      PaymentsDetailsPDF(paymentDetailsForPDF);
+        markPaymentAsPrinted(paymentDetailsForPDF.paymentId);
+      
+      navigate('/detalles-pagos');
+    } else {
+      // Si el usuario elige no imprimir, puedes redirigir o realizar otra acción
+      navigate('/detalles-pagos');
+    }
+  };
+ 
 
 
 
   return (
+
     <Container maxWidth="md">
-      <Typography
-        variant="h2"
-        component="div"
-        gutterBottom
-        sx={{
-          color: '#1976d2',
-          textTransform: 'uppercase',
-          fontWeight: 'bold',
-          mb: 4,
-          textAlign: 'center'
-        }}
-      >
-        REGISTRO DE PAGO
-      </Typography>
-      <form onSubmit={handleCustomerSearch} >
+      <TitleSection title="Registro de Pago" IconComponent={PriceChangeIcon} />
+      <Grid container spacing={6} alignItems="center">
+  <Grid item>
+    <Typography
+      variant="h6"
+      component="div"
+      gutterBottom
+      sx={{
+        color: '#000080',
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
+        mb: 3,
+        textAlign: 'left',
+        marginBottom: '10px',
+        marginTop:'10px',
+      }}
+    >
+      Seleccione un cliente:
+    </Typography>
+  </Grid>
+  <Grid item>
+    <Button
+      variant="contained"
+      color="success"
+      onClick={handleOpenCustomerModal}
+    >
+      Clientes Existentes
+    </Button>
+  </Grid>
+</Grid>
+      <CustomerModal
+        isOpen={isCustomerModalOpen}
+        onRequestClose={handleCloseCustomerModal}
+        onSelectCustomer={handleSelectCustomer}
+        setCustomerId={handleSelectCustomer.customerId}
+        setCustomerName={handleSelectCustomer.customerName}
+      />
+
+
+      {/* <form onSubmit={handleCustomerSearch} >
         <Typography
           variant="h6"
           component="div"
@@ -275,28 +363,13 @@ function PaymentRegistration() {
                 sx={{ flexGrow: 3 }}
                 margin="normal"
               />
-              <Button
-                onClick={handleCustomerSearch}
-                variant="contained"
-                sx={{ flexGrow: 2 }}
-              >
-                Validar Cliente
-              </Button>
+             
             </Box>
-            {customerName && (
-              <Typography variant="body1">
-                Nombre del Cliente: {customerName}
-              </Typography>
-            )}
-            {customerSearchError && (
-              <Typography variant="body2" color="error">
-                {customerSearchError}
-              </Typography>
-            )}
+           
           </Grid>
         </Grid>
 
-      </form>
+      </form> */}
       {showPaymentForm && (
         <form onSubmit={handleSubmitPayment}>
 
@@ -310,12 +383,28 @@ function PaymentRegistration() {
               fontWeight: 'bold',
               mb: 3,
               textAlign: 'left',
-              marginBottom: '10px'
+              marginBottom: '10px',
+              marginTop:'10px',
             }}
           >
             Complete la información del pago
           </Typography>
+          <Grid>
+          <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+  {customerName && (
+    <Typography variant="h6">
+      Nombre del Cliente: {customerName}
+    </Typography>
+  )}
+  {customerSearchError && (
+    <Typography variant="body2" color="error">
+      {customerSearchError}
+    </Typography>
+  )}
+  
+</Box>
 
+          </Grid>
           <Grid container spacing={3} alignItems="flex-end" >
             {/* Campos de formulario para detalles del pago */}
 
@@ -346,16 +435,22 @@ function PaymentRegistration() {
 
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="paymentDetail"
-                name="paymentDetail"
-                label="Detalles del Pago"
-                fullWidth
-                value={paymentDetail}
-                onChange={(e) => setPaymentDetail(e.target.value)}
-                variant="outlined"
-              />
+              
+               <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel>Detalles de pago</InputLabel>
+            <Select
+            required
+              value={paymentDetail}
+              onChange={(e) => setPaymentDetail(e.target.value)}
+              label="Detalles de pago"
+            >
+              <MenuItem value={"PAGO EN EFECTIVO"}>Pago en efectivo</MenuItem>
+              <MenuItem value={"TRANSFERENCIA"}>Transferencia</MenuItem>
+            </Select>
+          </FormControl>
+
+
+
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -421,7 +516,7 @@ function PaymentRegistration() {
         <Grid container spacing={2}>
           <Grid item xs={12}
             sx={{
-              
+
               boxShadow: 1,
               borderRadius: 2,
               p: 2,
@@ -488,9 +583,23 @@ function PaymentRegistration() {
             >
               Generar Pago con Detalles
             </Button>
+            
           </Grid>
         </Grid>
+        
       )}
+      <Dialog open={isDialogOpen} onClose={() => handlePrintConfirmation(false)}>
+  <DialogTitle>¿Desea imprimir el pago realizado?</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Seleccione si desea imprimir el pago antes de continuar.
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => handlePrintConfirmation(true)}>Sí, imprimir</Button>
+    <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
+  </DialogActions>
+</Dialog>
     </Container>
   );
 }

@@ -1,9 +1,7 @@
-// PaymentCrud.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL, API_AUDIT_URL } from "../../config";
-import PaymentTable from './PaymentsTable';
 import RowDetailsModal from '../Modals/RowDetailsModal';
 import TitleSection from '../Sidebar/TitleSection';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
@@ -15,10 +13,11 @@ import {
   Grid
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import AccountStatusTable from './AccounStatusTable';
 
 
-function PaymentCrud() {
-  const [payments, setPayments] = useState([]);
+function AccountStatus() {
+  const [accountStatus, setAccountStatus] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
   const navigate = useNavigate();
@@ -27,20 +26,26 @@ function PaymentCrud() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const currentPayments = payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const currentAccountStatus = accountStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const [clienteCedula, setClienteCedula] = useState('');
 
   const handleSearchClick = async () => {
     try {
-      let url = `${API_BASE_URL}/Payment`;
+      let url = `${API_BASE_URL}/StatusAccount`;
+      console.log("jp");
 
       // Agregar lógica de filtro por cédula del cliente y fechas
       if (clienteCedula && startDate && endDate) {
-        url += `/client/${clienteCedula}/${startDate}/${endDate}`;
+        url += `/${clienteCedula}/${startDate}/${endDate}`;
       }
 
       const response = await axios.get(url);
-      setPayments(response.data.data);
+      console.log(url);
+      console.log(response.success);
+      console.log(response.message);
+      console.log(response.data);
+      setAccountStatus(response.data);
+     
     } catch (err) {
       console.error(err);
       alert('Hubo un problema al cargar los pagos.');
@@ -49,22 +54,22 @@ function PaymentCrud() {
 
   useEffect(() => {
     // Cargar todos los pagos al inicio
-    const fetchPayments = async () => {
+    const fetchaccountStatus = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/Payment`);
-        setPayments(response.data.data);
+        const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
+        console.log(response.data.data);
+
+        setAccountStatus(response.data.data);
       } catch (err) {
         console.error(err);
         alert('Hubo un problema al cargar los pagos.');
       }
     };
 
-    fetchPayments();
+    fetchaccountStatus();
   }, []);
 
-  const handleAddPayment = () => {
-    navigate('/payment-registration');
-  };
+  
   const handleViewClick = (item) => {
     setSelectedRow(item);
     setIsModalOpen(true);
@@ -88,8 +93,10 @@ function PaymentCrud() {
 
     // Recargar todos los pagos
     try {
-      const response = await axios.get(`${API_BASE_URL}/Payment`);
-      setPayments(response.data.data);
+      const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
+
+      console.log(response.data.data[0]);
+      setAccountStatus(response.data.data);
     } catch (err) {
       console.error(err);
       alert('Hubo un problema al recargar los pagos.');
@@ -169,16 +176,16 @@ function PaymentCrud() {
         
         </Grid>
       </Box>
-      <PaymentTable payments={currentPayments} onViewClick={handleViewClick} columns={columns} />
-      <RowDetailsModal
+      <AccountStatusTable accounttatus={setAccountStatus} onViewClick={handleViewClick} columns={columns} />
+      {/* <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
         rowDetails={selectedRow}
-        columns={PaymentTable.columns}
-      />
+        columns={AccountStatusTable.columns}
+      /> */}
     </Container>
   );
 
 }
 
-export default PaymentCrud;
+export default AccountStatus;

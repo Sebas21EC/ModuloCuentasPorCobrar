@@ -33,7 +33,7 @@ function BankAccountCrud() {
   const Load = async () => {
     try {
       const result = await axios.get(`${API_BASE_URL}/BankAccount`);
-
+      console.log(result);
       //Auditoria
       const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
       const username = responseLogin ? responseLogin.username : null;
@@ -44,21 +44,18 @@ function BankAccountCrud() {
         method: "POST",
         body: JSON.stringify({
           action: "Read Bank Accounts",
-          description: `User: ${username}`,
+          description: `User ${username} read data from Bank Accounts`,
           ip: "192.168.0.102",
           date: formattedDate,
           functionName: "AR-BANK-ACCOUNTS-READ",
-          observation: ` ${username} user read data from bank accounts`,
+          observation: ` ${username}`,
         }),
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const dataResponseAudit = await responseAudit.json();
-      console.log(dataResponseAudit);
-
+      //     
       setBankAccounts(result.data.data);
     } catch (err) {
       alert(err);
@@ -113,16 +110,19 @@ function BankAccountCrud() {
     
     
   </Grid>
+  
 </Box>
 
-
-
-      <BankAccountTable
+<BankAccountTable
         bankAccounts={bankAccounts}
         onEditClick={handleEditClick}
         onViewClick={handleViewClick}
         columns={columns} 
+
+
       />
+
+      
       <AddBankAccountModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}

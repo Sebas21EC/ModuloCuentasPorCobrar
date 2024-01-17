@@ -38,6 +38,28 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
         bankAccountDetails: uppercaseBankAccountDetails,
         bankAccountStatus: bankAccountStatus
       });
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Create Bank Accounts",
+          description: `User ${username} create a new Bank Account`,
+          ip: "192.168.0.102",
+          date: formattedDate,
+          functionName: "AR-BANK-ACCOUNTS-CREATE",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
       //alert("Cuenta Bancaria registrada exitosamente!");
       //setNotificationOpen(true);
       setBankAccountNumber("");
