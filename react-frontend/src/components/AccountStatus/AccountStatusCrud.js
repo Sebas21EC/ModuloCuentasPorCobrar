@@ -27,30 +27,37 @@ function AccountStatus() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const currentAccountStatus = accountStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   const [clienteCedula, setClienteCedula] = useState('');
 
   const handleSearchClick = async () => {
     try {
       let url = `${API_BASE_URL}/StatusAccount`;
-      console.log("jp");
-
-      // Agregar lógica de filtro por cédula del cliente y fechas
       if (clienteCedula && startDate && endDate) {
         url += `/${clienteCedula}/${startDate}/${endDate}`;
       }
-
+  
       const response = await axios.get(url);
-      console.log(url);
-      console.log(response.success);
-      console.log(response.message);
-      console.log(response.data);
-      setAccountStatus(response.data);
-     
+      console.log("URL:", url);
+      console.log("Respuesta:", response.data);
+  
+      // Comprueba si la respuesta es un objeto y contiene el campo 'data'
+      if (response.data && response.data.data && response.data.data.customer) {
+        // Establece accountStatus con el array de payments del cliente
+        setAccountStatus([response.data.data]); // Envuelve el objeto en un array
+      } else {
+        // Si no, muestra un error o maneja la situación como consideres apropiado
+        console.error("Formato de respuesta inesperado:", response.data);
+        alert('El formato de los datos recibidos es incorrecto.');
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error al cargar los pagos:", err);
       alert('Hubo un problema al cargar los pagos.');
     }
   };
+  
+  
+
 
   useEffect(() => {
     // Cargar todos los pagos al inicio
@@ -108,7 +115,7 @@ function AccountStatus() {
       <Box my={4}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <TitleSection title="Listado de Pagos" IconComponent={PriceChangeIcon} />
+            <TitleSection title="Estados de Cuenta" IconComponent={PriceChangeIcon} />
           </Grid>
           <Grid item>
            
@@ -176,7 +183,7 @@ function AccountStatus() {
         
         </Grid>
       </Box>
-      <AccountStatusTable accounttatus={setAccountStatus} onViewClick={handleViewClick} columns={columns} />
+      <AccountStatusTable accountstatus={accountStatus} onViewClick={handleViewClick} columns={columns} />
       {/* <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
