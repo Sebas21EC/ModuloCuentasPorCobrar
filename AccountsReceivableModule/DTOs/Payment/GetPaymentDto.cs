@@ -9,5 +9,9 @@
         public decimal PaymentAmount { get; set; }
         public DateTime PaymentDate { get; set; }
         public bool IsPrinted { get; set; }
+
+    //    //opcioales
+    //    public GetBankAccountDto? BankAccount { get; set; }
+    //    public List<GetPaymentDetailDto>? PaymentDetails { get; set; } = new List<GetPaymentDetailDto>();
     }
 }

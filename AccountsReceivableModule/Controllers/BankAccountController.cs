@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AccountsReceivableModule.Controllers
 {
     [ApiController]
-    [FunctionAuthorize("AR-LOGIN")]
+    //[FunctionAuthorize("AR-LOGIN")]
     [Route("api/[controller]")]
     public class BankAccountController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet]
-        [FunctionAuthorize("AR-BANK-ACCOUNTS-READ")]
+        //[FunctionAuthorize("AR-BANK-ACCOUNTS-READ")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> Get()
         {
             try { 
