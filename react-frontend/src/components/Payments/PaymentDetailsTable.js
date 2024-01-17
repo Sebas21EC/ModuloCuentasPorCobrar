@@ -3,11 +3,11 @@ import Table from '../Tables/Table';
 
 function PaymentDetailsTable({ paymentDetails, onViewClick}) { // Cambiar paymentDetail a paymentDetails
   const columns = [
+    { Header: 'ACCIONES', accessor: 'actions' },
     { Header: 'DETALLE ID', accessor: 'paymentDetailId' },
     { Header: 'PAGO ID', accessor: 'paymentId' },
     { Header: 'FACTURA ID', accessor: 'invoiceId' },
-    { Header: 'MONTO APLICADO', accessor: 'amountApplied', format: (value) => `$${value.toFixed(2)}` },
-    { Header: 'ACCIONES', accessor: 'actions' }
+    { Header: 'MONTO APLICADO', accessor: 'amountApplied', format: (value) => `$${value.toFixed(2)}` }
   ];
 
   const dataIsValid = paymentDetails && Array.isArray(paymentDetails); // Cambiar a paymentDetails directamente
