@@ -31,6 +31,7 @@ internal class Program
         builder.Services.AddSingleton<IAuthService, AuthService>();
         builder.Services.AddScoped<IStatusAccountService, StatusAccountService>();
         builder.Services.AddScoped<IPaymentsReportService, PaymentsReportService>();
+        builder.Services.AddScoped<IAccountStatementService, AccountStatementService>();
 
 
         builder.Services.AddHttpClient<ExternalApiService>();

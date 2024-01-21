@@ -57,7 +57,7 @@ namespace AccountsReceivableModule.Services
 
                 //hacerle List<Customer> a los customer
                 var customersList = new List<Customer>();
-                foreach(var customer in customers)
+                foreach (var customer in customers)
                 {
                     customersList.Add(customer);
                 }
@@ -75,13 +75,14 @@ namespace AccountsReceivableModule.Services
             return serviceResponse;
         }
 
-        private List<StatusAccountDto> ConvertPaymentsToPaymetReportDtos(List<Customer> customersDta) {
+        private List<StatusAccountDto> ConvertPaymentsToPaymetReportDtos(List<Customer> customersDta)
+        {
 
             //usa el metodo ConvertPaymentToPaymetReportDto para cada customer con fechas de incio del 2000 y fecha actual del sistema
             var paymentReportDtos = new List<StatusAccountDto>();
             foreach (var customer in customersDta)
             {
-                paymentReportDtos.Add(ConvertPaymentToPaymetReportDto(customer, new DateTime(2000, 1, 1), DateTime.Now));
+                paymentReportDtos.Add(ConvertPaymentToPaymetReportDto(customer, new DateTime(2000, 1, 1), new DateTime(2025,12,12)));
             }
             return paymentReportDtos;
 
@@ -89,7 +90,13 @@ namespace AccountsReceivableModule.Services
 
 
         private StatusAccountDto ConvertPaymentToPaymetReportDto(Customer customerData, DateTime start, DateTime end)
-        {
+        {            //Obtener el valor de BeginningBalance de todas las Invices pagadas antes de la fecha de inicio
+            var beginningBalance = _context.Invoices
+                .Where(i => i.CustomerId == customerData.CustomerId && i.InvoiceDate < start)
+                .Sum(i => i.AmountPaid);
+            //actualializar el valor de BeginningBalance 
+
+
             //optener el paymetnId del customerData
             var payments = _context.Payments
                 .Where(p => p.CustomerId == customerData.CustomerId && p.PaymentDate >= start && p.PaymentDate <= end)
@@ -107,6 +114,19 @@ namespace AccountsReceivableModule.Services
 
                 //agregar los paymentDetails a cada payment
                 payment.PaymentDetails = paymentDetails;
+
+                //obtener Invoice mediante InvoiceId de paymetDetais 
+                foreach (var paymentDetail in paymentDetails)
+                {
+                    var invoice = _context.Invoices
+                        .Where(i => i.InvoiceId == paymentDetail.InvoiceId)
+                        .FirstOrDefault();
+
+                    //agregar la invoice a cada paymentDetail
+                    paymentDetail.Invoice = invoice;
+                }
+
+
             }
 
             //agregar los payments al customerData
@@ -117,6 +137,8 @@ namespace AccountsReceivableModule.Services
             var paymentReportDto = new StatusAccountDto
             {
                 Date = DateTime.Now,
+                BeginningBalance = beginningBalance,
+
                 Customer = new CustomerDto
                 {
                     CustomerId = customerData.CustomerId,
@@ -131,18 +153,29 @@ namespace AccountsReceivableModule.Services
                         TotalAmount = payment.PaymentAmount,
                         BankAccount = new BankAccountDto
                         {
-                            BankName = payment.BankAccount.BankName,
-                            BankAccountNumber = payment.BankAccount.BankAccountNumber,
-                            AccountType = payment.BankAccount.BankAccountDetails
+                            BankName = payment.BankAccount?.BankName,
+                            BankAccountNumber = payment.BankAccount?.BankAccountNumber,
+                            AccountType = payment.BankAccount?.BankAccountDetails
                         },
                         PaymentDetails = payment.PaymentDetails.Select(detail => new PaymentDetailDto
                         {
                             InvoiceId = detail.InvoiceId,
-                            AmountPaid = detail.AmountApplied
+                            AmountPaid = detail.AmountApplied,
+                            Invoice = new InvoiceDto
+                            {
+                                InvoiceId = detail.Invoice?.InvoiceId,
+                                InvoiceDate = detail.Invoice?.InvoiceDate,
+                                InvoiceDetail = detail.Invoice?.InvoiceDetail,
+                                AmountDue = detail.Invoice.AmountDue,
+                                AmountPaid = detail.Invoice.AmountPaid
+                            }
                         }).ToList()
                     }).ToList()
                 }
             };
+
+
+
 
             //hacerle json
             var json = JsonConvert.SerializeObject(paymentReportDto);

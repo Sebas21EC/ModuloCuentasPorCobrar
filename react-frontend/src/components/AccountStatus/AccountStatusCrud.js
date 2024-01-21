@@ -29,10 +29,11 @@ function AccountStatus() {
   const currentAccountStatus = accountStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const [clienteCedula, setClienteCedula] = useState('');
 
+
+
   const handleSearchClick = async () => {
     try {
       let url = `${API_BASE_URL}/StatusAccount`;
-      console.log("jp");
 
       // Agregar lógica de filtro por cédula del cliente y fechas
       if (clienteCedula && startDate && endDate) {
@@ -40,14 +41,9 @@ function AccountStatus() {
       }
 
       const response = await axios.get(url);
-      console.log(url);
-      console.log(response.success);
-      console.log(response.message);
-      console.log(response.data);
       setAccountStatus(response.data);
      
     } catch (err) {
-      console.error(err);
       alert('Hubo un problema al cargar los pagos.');
     }
   };
@@ -57,8 +53,6 @@ function AccountStatus() {
     const fetchaccountStatus = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
-        console.log(response.data.data);
-
         setAccountStatus(response.data.data);
       } catch (err) {
         console.error(err);
@@ -95,7 +89,6 @@ function AccountStatus() {
     try {
       const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
 
-      console.log(response.data.data[0]);
       setAccountStatus(response.data.data);
     } catch (err) {
       console.error(err);
@@ -176,7 +169,7 @@ function AccountStatus() {
         
         </Grid>
       </Box>
-      <AccountStatusTable accounttatus={setAccountStatus} onViewClick={handleViewClick} columns={columns} />
+      <AccountStatusTable accountstatus={accountStatus} onViewClick={handleViewClick} columns={columns} />
       {/* <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
