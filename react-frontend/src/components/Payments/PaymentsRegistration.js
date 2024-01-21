@@ -284,10 +284,10 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
       PaymentsDetailsPDF(paymentDetailsForPDF);
         markPaymentAsPrinted(paymentDetailsForPDF.paymentId);
       
-      navigate('/detalles-pagos');
+      navigate('/todos-los-pagos');
     } else {
       // Si el usuario elige no imprimir, puedes redirigir o realizar otra acción
-      navigate('/detalles-pagos');
+      navigate('/todos-los-pagos');
     }
   };
  
