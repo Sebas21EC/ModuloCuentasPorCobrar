@@ -10,6 +10,7 @@ namespace AccountsReceivableModule.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string? InvoiceId { get; set; }
         public string? CustomerId { get; set; }
+        public DateTime? InvoiceDate { get; set; }
         public string? InvoiceDetail { get; set; }
         public decimal AmountDue { get; set; }
         public decimal AmountPaid { get; set; }

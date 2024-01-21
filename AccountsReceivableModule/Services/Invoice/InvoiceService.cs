@@ -40,8 +40,9 @@ namespace AccountsReceivableModule.Services
                 var invoice = new Invoice
                 {
                     InvoiceId = externalInvoice.InvoiceId,
-                    CustomerId = externalInvoice.Customer.CustomerId,
+                    CustomerId = externalInvoice.Customer?.CustomerId,
                     InvoiceDetail = externalInvoice.PaytName,
+                    InvoiceDate = externalInvoice.HeadDate,
                     //encviar en cada iteracion el invice para calcular el amount due
                     AmountDue = GetTotalAmountDue(externalInvoice),
                     AmountPaid = 0

@@ -30,21 +30,22 @@ function AccountStatus() {
 
   const [clienteCedula, setClienteCedula] = useState('');
 
+
+
   const handleSearchClick = async () => {
     try {
       let url = `${API_BASE_URL}/StatusAccount`;
+
       if (clienteCedula && startDate && endDate) {
         url += `/${clienteCedula}/${startDate}/${endDate}`;
       }
   
       const response = await axios.get(url);
-      console.log("URL:", url);
-      console.log("Respuesta:", response.data);
-  
+
       // Comprueba si la respuesta es un objeto y contiene el campo 'data'
       if (response.data && response.data.data && response.data.data.customer) {
         // Establece accountStatus con el array de payments del cliente
-        setAccountStatus([response.data.data]); // Envuelve el objeto en un array
+      setAccountStatus(response.data);
       } else {
         // Si no, muestra un error o maneja la situación como consideres apropiado
         console.error("Formato de respuesta inesperado:", response.data);
@@ -64,8 +65,6 @@ function AccountStatus() {
     const fetchaccountStatus = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
-        console.log(response.data.data);
-
         setAccountStatus(response.data.data);
       } catch (err) {
         console.error(err);
@@ -102,7 +101,6 @@ function AccountStatus() {
     try {
       const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
 
-      console.log(response.data.data[0]);
       setAccountStatus(response.data.data);
     } catch (err) {
       console.error(err);

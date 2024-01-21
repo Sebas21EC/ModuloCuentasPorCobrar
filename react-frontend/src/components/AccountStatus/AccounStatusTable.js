@@ -1,51 +1,64 @@
-import React from 'react';
-import Table from '../Tables/Table';
+import React from "react";
+import Table from "../Tables/Table";
 
-function AccountStatusTable({ accountstatus, onEditClick, onDeleteClick, onViewClick }) {
+function AccountStatusTable({
+  accountstatus,
+  onEditClick,
+  onDeleteClick,
+  onViewClick,
+}) {
   // Crear una nueva matriz de datos con un pago en cada fila
-  const flattenedData = Array.isArray(accountstatus) && accountstatus.length > 0
-    ? accountstatus.reduce((acc, account) => {
-      // Verificar que cada cuenta tiene un cliente y pagos antes de proceder
-      if (account.customer && Array.isArray(account.customer.payments)) {
-        const customer = account.customer;
-        const payments = customer.payments;
+  const flattenedData = accountstatus.reduce((acc, account) => {
+    const customer = account.customer;
+    const payments = customer.payments;
 
-        // Por cada pago, crear una fila de datos
-        payments.forEach(payment => {
-          const row = {
-            date: account.date,
-            customerId: customer.customerId,
-            customerName: customer.customerName,
-            customerEmail: customer.customerEmail,
-            customerPhone: customer.customerPhone,
-            customerAddress: customer.customerAddress,
-            paymentId: payment.paymentId,
-            paymentDate: payment.paymentDate,
-            totalAmount: payment.totalAmount,
-            // Asegúrate de que bankAccount y paymentDetails son objetos antes de acceder a sus propiedades
-            bankName: payment.bankAccount?.bankName || '',
-            bankAccountNumber: payment.bankAccount?.bankAccountNumber || '',
-            accountType: payment.bankAccount?.accountType || '',
-            invoiceId: payment.paymentDetails?.[0]?.invoiceId || '',
-            amountPaid: payment.paymentDetails?.[0]?.amountPaid || '',
-          };
-          acc.push(row);
-        });
+    // Por cada pago, crear una fila de datos
+    payments.forEach((payment, index) => {
+      const row = {
+        date: account.date,
+        customerId: customer.customerId,
+        customerName: customer.customerName,
+        customerEmail: customer.customerEmail,
+        customerPhone: customer.customerPhone,
+        customerAddress: customer.customerAddress,
+        paymentId: payment.paymentId,
+        paymentDate: payment.paymentDate,
+        totalAmount: payment.totalAmount,
+        bankName: payment.bankAccount.bankName,
+        bankAccountNumber: payment.bankAccount.bankAccountNumber,
+        accountType: payment.bankAccount.accountType,
+      };
+
+      if (payment.paymentDetails.length > 0) {
+        const detailPayment = payment.paymentDetails[0];
+        row.invoiceId = detailPayment.invoiceId;
+        row.amountPaid = detailPayment.amountPaid;
       }
-      return acc;
-    }, [])
-    : []; 
-  console.log(flattenedData);
+
+      acc.push(row);
+
+
+    });
+
+    return acc;
+  }, []);
+
   const columns = [
-    { Header: 'Fecha', accessor: 'date' },
-    { Header: 'Cliente ID', accessor: 'customerId' },
-    { Header: 'Cliente', accessor: 'customerName' },
-    { Header: 'Dirección', accessor: 'customerAddress' },
-    { Header: 'Payment ID', accessor: 'paymentId' },
-    { Header: 'Payment Date', accessor: 'paymentDate' },
-    { Header: 'Total Amount', accessor: 'totalAmount' },
-    { Header: 'Bank Name', accessor: 'bankName' },
-    { Header: 'Invoice ID', accessor: 'invoiceId' },
+    { Header: "Fecha", accessor: "date" },
+    { Header: "Cliente ID", accessor: "customerId" },
+    { Header: "Cliente", accessor: "customerName" },
+    { Header: "Email", accessor: "customerEmail" },
+    { Header: "Teléfono", accessor: "customerPhone" },
+    { Header: "Dirección", accessor: "customerAddress" },
+    { Header: "Payment ID", accessor: "paymentId" },
+    { Header: "Payment Date", accessor: "paymentDate" },
+    { Header: "Total Amount", accessor: "totalAmount" },
+    { Header: "Bank Name", accessor: "bankName" },
+    { Header: "Bank Account Number", accessor: "bankAccountNumber" },
+    { Header: "Account Type", accessor: "accountType" },
+    { Header: "Invoice ID", accessor: "invoiceId" },
+    { Header: "Amount Paid", accessor: "amountPaid" },
+
   ];
 
   return (
