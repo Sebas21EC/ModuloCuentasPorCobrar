@@ -58,6 +58,7 @@ function AccountStatusTable({
     { Header: "Account Type", accessor: "accountType" },
     { Header: "Invoice ID", accessor: "invoiceId" },
     { Header: "Amount Paid", accessor: "amountPaid" },
+
   ];
 
   return (

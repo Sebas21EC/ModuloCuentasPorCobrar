@@ -119,6 +119,14 @@ function PaymentCrud() {
               value={clienteCedula}
               onChange={handleClienteCedulaChange}
             />
+            {/* <Button variant="outlined" onClick={handleOpenModal}>
+                Seleccionar Cliente
+            </Button>
+            <CustomerModal
+                isOpen={isModalOpen}
+                onRequestClose={handleCloseModal}
+                onSelectCustomer={handleSelectCustomer}
+            /> */}
           </Grid>
           <Grid item xs={6} sm={
             3}>

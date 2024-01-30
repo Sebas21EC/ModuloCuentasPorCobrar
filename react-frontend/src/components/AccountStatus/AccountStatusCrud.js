@@ -27,6 +27,7 @@ function AccountStatus() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const currentAccountStatus = accountStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   const [clienteCedula, setClienteCedula] = useState('');
 
 
@@ -35,18 +36,29 @@ function AccountStatus() {
     try {
       let url = `${API_BASE_URL}/StatusAccount`;
 
-      // Agregar lógica de filtro por cédula del cliente y fechas
       if (clienteCedula && startDate && endDate) {
         url += `/${clienteCedula}/${startDate}/${endDate}`;
       }
-
+  
       const response = await axios.get(url);
+
+      // Comprueba si la respuesta es un objeto y contiene el campo 'data'
+      if (response.data && response.data.data && response.data.data.customer) {
+        // Establece accountStatus con el array de payments del cliente
       setAccountStatus(response.data);
-     
+      } else {
+        // Si no, muestra un error o maneja la situación como consideres apropiado
+        console.error("Formato de respuesta inesperado:", response.data);
+        alert('El formato de los datos recibidos es incorrecto.');
+      }
     } catch (err) {
+      console.error("Error al cargar los pagos:", err);
       alert('Hubo un problema al cargar los pagos.');
     }
   };
+  
+  
+
 
   useEffect(() => {
     // Cargar todos los pagos al inicio
@@ -101,7 +113,7 @@ function AccountStatus() {
       <Box my={4}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <TitleSection title="Listado de Pagos" IconComponent={PriceChangeIcon} />
+            <TitleSection title="Estados de Cuenta" IconComponent={PriceChangeIcon} />
           </Grid>
           <Grid item>
            
