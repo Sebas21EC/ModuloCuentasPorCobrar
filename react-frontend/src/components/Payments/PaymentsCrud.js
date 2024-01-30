@@ -156,6 +156,7 @@ function PaymentCrud() {
               value={clienteCedula}
               onChange={handleClienteCedulaChange}
             />
+
              */}
              <Autocomplete
             id="customer-search-select"
@@ -172,7 +173,7 @@ function PaymentCrud() {
               setSearchText(newInputValue);
             }}
           />
-            
+           
           </Grid>
           <Grid item xs={6} sm={
             3}>

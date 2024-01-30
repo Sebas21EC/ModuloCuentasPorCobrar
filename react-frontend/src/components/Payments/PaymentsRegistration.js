@@ -253,6 +253,7 @@ function PaymentRegistration() {
     if (shouldPrint) {
 
       PaymentsDetailsPDF(paymentDetailsForPDF);
+
       markPaymentAsPrinted(paymentDetailsForPDF.paymentId);
 
       navigate('/todos-los-pagos');

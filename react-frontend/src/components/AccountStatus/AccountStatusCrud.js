@@ -12,11 +12,14 @@ import AccountStatusPDF from '../PDF/AccountStatusPDF';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,Typography } from '@mui/material';
 function AccountStatus() {
   const [accountStatus, setAccountStatus] = useState([]);
+
   const [showTable, setShowTable] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
   const [clienteCedula, setClienteCedula] = useState('');
   const [customerName, setCustomerName] = useState('');
+
 
   const [customers, setCustomers] = useState([]);
   const [allCustomers, setAllCustomers] = useState([]);
@@ -39,15 +42,21 @@ function AccountStatus() {
     }
     setIsDialogOpen(false);
   };
+  
+  
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
+
         const response = await axios.get(`${API_BASE_URL}/Customer`);
         setCustomers(response.data.data);
         setAllCustomers(response.data.data);
       } catch (error) {
         console.error("Error fetching customers:", error);
+
+       
       }
     };
 
@@ -72,12 +81,14 @@ function AccountStatus() {
         // Actualiza el estado con los datos recibidos
 
 
+
         setAccountStatus(response.data.data);
         console.log(response.data.data);
         setShowTable(true);
       } else {
         alert('No se encontraron datos para la búsqueda realizada.');
       }
+
     } catch (err) {
       console.error("Error al cargar los estados de cuenta:", err);
       alert('Hubo un problema al cargar los estados de cuenta.');
@@ -99,6 +110,8 @@ function AccountStatus() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <TitleSection title="Estados de Cuenta" IconComponent={PriceChangeIcon} />
+
+
           </Grid>
         </Grid>
       </Box>
@@ -161,6 +174,7 @@ function AccountStatus() {
           </Grid>
         </Grid>
       </Box>
+
       {showTable && (
         <>
           <Grid>
@@ -195,6 +209,7 @@ function AccountStatus() {
           <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
         </DialogActions>
       </Dialog>
+
     </Container>
   );
 }
