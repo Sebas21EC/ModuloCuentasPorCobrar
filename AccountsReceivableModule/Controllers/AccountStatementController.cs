@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AccountsReceivableModule.Controllers
 {
     [Route("api/[controller]")]
+    [FunctionAuthorize("AR-LOGIN")]
     [ApiController]
     public class AccountStatementController : ControllerBase
     {
@@ -19,6 +20,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpGet("{CustomerId}/{startDate}/{endDate}")]
+        [FunctionAuthorize("AR-STATEMENT-ACCOUNT")]
         public async Task<IActionResult> Get(string CustomerId, DateTime startDate, DateTime endDate)
         {
             var response = await _accountStatementService.Get(CustomerId, startDate, endDate);
