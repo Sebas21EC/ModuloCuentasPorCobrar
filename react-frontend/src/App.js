@@ -86,9 +86,11 @@ function App() {
 
     // Limpia el token y las funciones de la sessionStorage
     sessionStorage.removeItem("responseLogin");
-    window.location.reload(); // Recarga la página para que el usuario pueda iniciar sesión nuevamente
-
-    // Lógica adicional para redireccionar o realizar otras acciones después del cierre de sesión
+    // Establece el estado de autenticación del usuario en falso
+    setIsLoggedIn(false);
+    // Redirecciona a la página de inicio de sesión
+    window.location.href = "/";
+    
   };
 
   if (!isLoggedIn) {
