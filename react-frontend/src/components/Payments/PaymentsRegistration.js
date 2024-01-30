@@ -346,66 +346,43 @@ function PaymentRegistration() {
             }}
           />
         </Grid>
-        <Grid item >
-    <Box display="flex" justifyContent="center" mt={2}>
-      {customerName && (
-        <Card variant="outlined" sx={{ maxWidth: 345 }}>
-          <CardContent>
-            <Typography variant="h6" component="div">
-              Nombre del Cliente: {customerName}
-            </Typography>
-            <Typography variant="h6" component="div">
-              Deuda Total: {balance}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
-    </Box>
-  </Grid>
-      </Grid>
-      {/* <CustomerModal
-        isOpen={isCustomerModalOpen}
-        onRequestClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSelectCustomer}
-        setCustomerId={handleSelectCustomer.customerId}
-        setCustomerName={handleSelectCustomer.customerName}
-      /> */}
-
-
-      {/* <form onSubmit={handleCustomerSearch} >
-        <Typography
-          variant="h6"
-          component="div"
-          gutterBottom
-          sx={{
-            color: '#000080',
-            textTransform: 'uppercase',
-            fontWeight: 'bold',
-            mb: 3,
-            textAlign: 'left',
-            marginBottom: '0px'
-          }}
-        >
-          Ingrese la identificación del cliente:
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <TextField
-                //label="Identificación del Cliente"
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                sx={{ flexGrow: 3 }}
-                margin="normal"
-              />
-             
-            </Box>
-           
-          </Grid>
+        <Grid item xs={12}> {/* Asegura que ocupe todo el ancho disponible */}
+        <Box
+    display="flex"
+    justifyContent="center"
+    mt={-2} // Ajusta el margin-top para acercar la Card si es necesario
+  >
+    {customerName && (
+      <Card
+        variant="outlined"
+        sx={{
+          maxWidth: '100%',
+          borderRadius: '16px',
+          mt: -1, // Ajusta el margin-top aquí si es necesario
+          backgroundColor: '#386EBC', // Cambia el color de fondo a #90B2E4
+          color: 'white', // Cambia el color del texto a blanco
+          height: '60px'
+        }}
+      >
+        <CardContent>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              textAlign: 'center',
+              fontWeight: 'normal', // Quita fontWeight para eliminar la negrita
+            }}
+          >
+            Nombre del Cliente: {customerName} ⮕ Deuda Total $  {balance.toFixed(2)}
+          </Typography>
+        </CardContent>
+      </Card>
+    )}
+  </Box>
         </Grid>
 
-      </form> */}
+      </Grid>
+     
       {showPaymentForm && (
         <form onSubmit={handleSubmitPayment}>
 

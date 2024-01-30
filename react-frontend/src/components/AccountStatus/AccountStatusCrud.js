@@ -26,6 +26,7 @@ function AccountStatus() {
   const [searchText, setSearchText] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
 
   const handlePrintAccountStatus = () => {
 
@@ -70,8 +71,20 @@ function AccountStatus() {
     );
     setCustomers(filteredCustomers);
   }, [searchText, allCustomers]);
+  const canSearch = () => {
+    return (
+      startDate &&
+      endDate &&
+      clienteCedula &&
+      new Date(startDate) <= new Date(endDate)
+    );
+  };
 
   const handleSearchClick = async () => {
+    if (!canSearch()) {
+      alert('Por favor asegúrese de que todos los campos estén llenos y que las fechas sean correctas.');
+      return;
+    }
     try {
       let url = `${API_BASE_URL}/accountstatement/${clienteCedula}/${startDate}/${endDate}`;
       const response = await axios.get(url);
@@ -119,6 +132,7 @@ function AccountStatus() {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={3}>
             <Autocomplete
+            required
               id="customer-search-select"
               options={customers}
               getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
@@ -138,6 +152,7 @@ function AccountStatus() {
             <TextField
               id="start-date"
               label="Fecha de inicio"
+              required
               type="date"
               fullWidth
               InputLabelProps={{ shrink: true }}
@@ -151,18 +166,20 @@ function AccountStatus() {
               label="Fecha de fin"
               type="date"
               fullWidth
+              required
               InputLabelProps={{ shrink: true }}
               value={endDate}
               onChange={(event) => setEndDate(event.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={2}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleSearchClick}
-              fullWidth
-            >
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleSearchClick}
+            fullWidth
+            disabled={!canSearch()}
+          >
               Buscar
             </Button>
           </Grid>
@@ -186,15 +203,18 @@ function AccountStatus() {
                 </Typography>
               )}              
             </Box></Grid>
-
+           
           <AccountStatusTable accountstatus={accountStatus} />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handlePrintAccountStatus}
-          >
-            Imprimir Estado de Cuenta
-          </Button>
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handlePrintAccountStatus}
+              
+            >
+              Imprimir Estado de Cuenta
+            </Button>
+          </Box>
         </>
       )}
       <Dialog open={isDialogOpen} onClose={() => handlePrintConfirmation(false)}>
