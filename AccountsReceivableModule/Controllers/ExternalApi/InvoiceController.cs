@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AccountsReceivableModule.Controllers
 {
     [Route("api/[controller]")]
+    [FunctionAuthorize("AR-LOGIN")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
@@ -18,7 +19,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet]
-
+        [FunctionAuthorize("AR-INVOICES-READ")]
         public async Task<ActionResult<ServiceResponse<GetInvoiceDto>>> Get()
         {
             try
@@ -34,6 +35,7 @@ namespace AccountsReceivableModule.Controllers
 
 
         [HttpGet("{id}")]
+        [FunctionAuthorize("AR-INVOICES-READ")]
         public async Task<ActionResult<ServiceResponse<GetInvoiceDto>>> Get(string id)
         {
             try
@@ -53,6 +55,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpGet("customer/{customerId}")]
+        [FunctionAuthorize("AR-INVOICES-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetInvoiceDto>>>> GetInvoicesByCustomer(string customerId)
         {
             try
@@ -67,6 +70,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpGet("customer/{customerId}/balance")]
+        [FunctionAuthorize("AR-INVOICES-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetInvoiceDto>>>> GetInvoicesByCustomerAndBalance(string customerId)
         {
             try

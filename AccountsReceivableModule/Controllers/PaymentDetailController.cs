@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AccountsReceivableModule.Controllers
 {
     [Route("api/[controller]")]
+    [FunctionAuthorize("AR-LOGIN")]
     [ApiController]
     public class PaymentDetailController : ControllerBase
     {
@@ -17,6 +18,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpGet]
+        [FunctionAuthorize("AR-PAYMENT-DETAIL-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetPaymentDetailDto>>>> Get()
         {
             return Ok(await _paymentDetailService.Get());
@@ -34,6 +36,7 @@ namespace AccountsReceivableModule.Controllers
         //}
 
         [HttpPost]
+        [FunctionAuthorize("AR-PAYMENT-DETAIL-CREATE")]
         public async Task<ActionResult<ServiceResponse<List<GetPaymentDetailDto>>>> Create([FromBody] CreatePaymentDetailDto newPaymentDetail)
         {
             if (!ModelState.IsValid)
@@ -51,6 +54,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpPost("assign")]
+        [FunctionAuthorize("AR-PAYMENT-DETAIL-CREATE")]
         public async Task<IActionResult> AssignPaymentToInvoices([FromBody] AssignPaymentDto assignPaymentDto)
         {
             var response = await _paymentDetailService.AssignPaymentToInvoices(assignPaymentDto.PaymentId, assignPaymentDto.PaymentDetails);

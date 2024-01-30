@@ -8,6 +8,7 @@ namespace AccountsReceivableModule.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [FunctionAuthorize("AR-LOGIN")]
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -17,12 +18,14 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpGet]
+        [FunctionAuthorize("AR-PAYMENTS-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetPaymentDto>>>> Get()
         {
             return Ok(await _paymentService.GetAll());
         }
 
         [HttpGet("{paymentId}")]
+        [FunctionAuthorize("AR-PAYMENTS-READ")]
         public async Task<ActionResult<ServiceResponse<GetPaymentDto>>> GetById(string paymentId)
         {
             var response = await _paymentService.GetById(paymentId);
@@ -34,6 +37,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpPost]
+        [FunctionAuthorize("AR-PAYMENTS-CREATE")]
         public async Task<ActionResult<ServiceResponse<List<GetPaymentDto>>>> Create([FromBody] CreatePaymentDto newPayment)
         {
             if (!ModelState.IsValid)
@@ -51,6 +55,7 @@ namespace AccountsReceivableModule.Controllers
         }
 
         [HttpPut("{paymentId}")]
+        [FunctionAuthorize("AR-PAYMENTS-UPDATE")]
         public async Task<ActionResult<ServiceResponse<GetPaymentDto>>> Update(string paymentId, [FromBody] UpdatePaymentDto updatedPayment)
         {
             if (!ModelState.IsValid)
@@ -79,6 +84,7 @@ namespace AccountsReceivableModule.Controllers
         //}
 
         [HttpGet("client/{clientId}/{startDate}/{endDate}")]
+        [FunctionAuthorize("AR-PAYMENTS-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetPaymentDto>>>> GetByClientAndDate(string clientId, DateTime startDate, DateTime endDate)
         {
             var response = await _paymentService.GetByClientAndDate(clientId, startDate, endDate);

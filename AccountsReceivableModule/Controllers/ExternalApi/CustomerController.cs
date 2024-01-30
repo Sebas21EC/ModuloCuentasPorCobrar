@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AccountsReceivableModule.Controllers.ExternalApi
 {
     [Route("api/[controller]")]
+    [FunctionAuthorize("AR-LOGIN")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
@@ -41,6 +42,7 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
 
 
         [HttpGet]
+        [FunctionAuthorize("AR-CUSTOMERS-READ")]
         public async Task<ActionResult<ServiceResponse<GetCustomerDto>>> Get()
         {
             try { 
@@ -55,6 +57,7 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
 
 
         [HttpGet("{id}")]
+        [FunctionAuthorize("AR-CUSTOMERS-READ")]
         public async Task<ActionResult<ServiceResponse<GetCustomerDto>>> Get(string id)
         {
             try
@@ -74,6 +77,7 @@ namespace AccountsReceivableModule.Controllers.ExternalApi
         }
 
         [HttpGet("invoices/{customerId}")]
+        [FunctionAuthorize("AR-CUSTOMERS-READ")]
         public async Task<ActionResult<ServiceResponse<List<GetInvoiceDto>>>> GetInvoicesByCustomer(string customerId)
         {
             try
