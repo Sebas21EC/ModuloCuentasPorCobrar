@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from '@mui/material';
 import CustomerModal from '../Modals/CustomerModal';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import TitleSection from '../Sidebar/TitleSection';
 import PaymentsDetailsPDF from '../PDF/PaymentsDetailsPDF';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 import axios from "axios";
 import {
@@ -30,6 +32,7 @@ function PaymentRegistration() {
 
   const navigate = useNavigate();
   const [selectedBankAccount, setSelectedBankAccount] = useState('');
+  const [customers, setCustomers] = useState([]);
 
   const [customerName, setCustomerName] = useState('');
   const [customerSearchError, setCustomerSearchError] = useState('');
@@ -40,7 +43,6 @@ function PaymentRegistration() {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [bankAccountId, setBankAccountId] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [isPrinted, setIsPrinted] = useState(false);
 
   //
   const [paymentId, setPaymentId] = useState(null);
@@ -48,16 +50,19 @@ function PaymentRegistration() {
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [invoicePayments, setInvoicePayments] = useState({});
   const [invoiceSelection, setInvoiceSelection] = useState([]);
+  const [isPrinted, setIsPrinted] = useState([]);
+  const [balance, setBalance] = useState([]);
   //
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
-const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
-
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [paymentDetailsForPDF, setPaymentDetailsForPDF] = useState("");
+  const [allCustomers, setAllCustomers] = useState([]);
+  const [searchText, setSearchText] = useState("");
   // Datos de ejemplo para cuentas bancarias y facturas pendientes
   const [bankAccounts, setBankAccounts] = useState([]);
 
 
-  // ... (otros manejadores de eventos)
+
 
   useEffect(() => {
     const loadBankAccounts = async () => {
@@ -95,7 +100,7 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
           bankAccountId: bankAccountId,
           paymentAmount: paymentAmount,
           paymentDate: paymentDate,
-          isPrinted: isPrinted
+          isPrinted: false
         });
 
         if (response.data && response.data.data && response.data.data.length) {
@@ -139,44 +144,6 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
     }
   };
 
-
-  const handleCustomerSearch = async () => {
-    setCustomerSearchError('');
-
-    // Validar que el campo de identificación del cliente no esté vacío
-    if (!customerId.trim()) {
-      setCustomerSearchError('Ingrese una identificación de cliente válida.');
-      setCustomerName('');
-      // Ocultar el segundo formulario en caso de error
-      setShowPaymentForm(false);
-      return;
-    } else {
-
-      try {
-        const response = await axios.get(`${API_BASE_URL}/Customer/${customerId}`);
-        const customerData = response.data;
-
-        if (customerData.success && customerData.data) {
-          setCustomerName(customerData.data.customerName);
-          setCustomerId(customerData.data.customerId);
-          // Mostrar el segundo formulario cuando se encuentre el cliente
-          setShowPaymentForm(true);
-        } else {
-          setCustomerSearchError('Cliente no encontrado.');
-          setCustomerName('');
-          // Ocultar el segundo formulario en caso de error
-          setShowPaymentForm(false);
-        }
-      } catch (error) {
-        console.error('Error searching customer:', error);
-        setCustomerSearchError('Error al buscar el cliente.');
-        setCustomerName('');
-        // Ocultar el segundo formulario en caso de error
-        setShowPaymentForm(false);
-      }
-    }
-  };
-
   const handleOpenCustomerModal = () => {
     setIsCustomerModalOpen(true);
   };
@@ -185,22 +152,22 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
     setIsCustomerModalOpen(false);
   };
 
-  const handleSelectCustomer = (customerId, customerName) => {
-    setSelectedCustomerId(customerId);
-    setCustomerId(customerId);
-    setCustomerName(customerName);
-    console.log(customerName)
-    // Mostrar el segundo formulario cuando se encuentre el cliente
-    setShowPaymentForm(true);
-    handleCloseCustomerModal();
-  };
+  // const handleSelectCustomer = (customerId, customerName) => {
+  //   setSelectedCustomerId(customerId);
+  //   setCustomerId(customerId);
+  //   setCustomerName(customerName);
+  //   console.log(customerName)
+  //   // Mostrar el segundo formulario cuando se encuentre el cliente
+  //   setShowPaymentForm(true);
+  //   handleCloseCustomerModal();
+  // };
   //////
 
   // const handleSubmit = async (event) => {
   //   event.preventDefault();
   // };
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [userWantsToPrint, setUserWantsToPrint] = useState(false);
+
   const handleInvoiceAmountChange = (invoiceId, amount) => {
     const newInvoicePayments = {
       ...invoicePayments,
@@ -238,27 +205,31 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
         console.error('No hay detalles de pago para enviar.');
         return;
       }
-
-      // Construir el objeto a enviar
       const postData = {
         paymentId: paymentId,
         paymentDetails: paymentDetailsToSend,
       };
-      const detailsPDF={
+
+
+      const detailsPDF = {
         paymentDetailsToSend,
         customerName,
         customerId,
-        paymentDate
+        paymentDate,
+        paymentId,
+        paymentDetail,
+        bankAccountId,
+        paymentAmount
 
       }
 
-      // Enviar la solicitud POST a la API
       try {
         const response = await axios.post(`${API_BASE_URL}/PaymentDetail/assign`, postData);
         console.log('Respuesta de la API:', response.data);
+        const paymentDetail = response.data;
         // Restablecer estados, mostrar confirmación, etc.
         setPaymentDetailsForPDF(detailsPDF);
-    setIsDialogOpen(true);
+        setIsDialogOpen(true);
 
 
       } catch (error) {
@@ -280,60 +251,124 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
   const handlePrintConfirmation = (shouldPrint) => {
     setIsDialogOpen(false); // Cierra el diálogo independientemente de la decisión
     if (shouldPrint) {
-      // Aquí llamas a la función para generar el PDF
+
       PaymentsDetailsPDF(paymentDetailsForPDF);
-        markPaymentAsPrinted(paymentDetailsForPDF.paymentId);
-      
+      markPaymentAsPrinted(paymentDetailsForPDF.paymentId);
+
       navigate('/todos-los-pagos');
     } else {
-      // Si el usuario elige no imprimir, puedes redirigir o realizar otra acción
+
       navigate('/todos-los-pagos');
     }
   };
- 
 
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/Customer`);
+
+        setCustomers(response.data.data);
+        setAllCustomers(response.data.data);
+      } catch (error) {
+        console.error("Error cargando los clientes:", error);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
+  useEffect(() => {
+    const filteredCustomers = allCustomers.filter((customer) =>
+      customer.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
+      customer.customerId.toString().includes(searchText)
+    );
+    setCustomers(filteredCustomers);
+  }, [searchText, allCustomers]);
+
+  useEffect(() => {
+    if (customerId) {
+      async function fetchCustomerBalance() {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/invoice/customer/${customerId}`);
+          const totalBalance = response.data.data.reduce((sum, invoice) => sum + invoice.balance, 0);
+          setBalance(totalBalance);
+        } catch (error) {
+          setCustomerSearchError('Error al obtener la deuda del cliente');
+        }
+      }
+
+      fetchCustomerBalance();
+    }
+  }, [customerId]);
 
 
   return (
 
     <Container maxWidth="md">
       <TitleSection title="Registro de Pago" IconComponent={PriceChangeIcon} />
-      <Grid container spacing={6} alignItems="center">
-  <Grid item>
-    <Typography
-      variant="h6"
-      component="div"
-      gutterBottom
-      sx={{
-        color: '#000080',
-        textTransform: 'uppercase',
-        fontWeight: 'bold',
-        mb: 3,
-        textAlign: 'left',
-        marginBottom: '10px',
-        marginTop:'10px',
-      }}
-    >
-      Seleccione un cliente:
-    </Typography>
+      <Grid container spacing={12} alignItems="center">
+        <Grid item xs={6}>
+          <Typography
+            variant="h6"
+            component="div"
+            gutterBottom
+            sx={{
+              color: '#000080',
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+              mb: 3,
+              textAlign: 'left',
+              marginBottom: '10px',
+              marginTop: '10px',
+            }}
+          >
+            Seleccione un cliente:
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Autocomplete
+            id="customer-search-select"
+            options={customers}
+            getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
+
+            renderInput={(params) => <TextField {...params} label="Buscar cliente" />}
+            value={selectedCustomer}
+            onChange={(event, newValue) => {
+              setSelectedCustomer(newValue);
+              setCustomerId(newValue ? newValue.customerId : '');
+              setCustomerName(newValue ? newValue.customerName : '');
+
+              setShowPaymentForm(true);
+            }}
+            onInputChange={(event, newInputValue) => {
+              setSearchText(newInputValue);
+            }}
+          />
+        </Grid>
+        <Grid item >
+    <Box display="flex" justifyContent="center" mt={2}>
+      {customerName && (
+        <Card variant="outlined" sx={{ maxWidth: 345 }}>
+          <CardContent>
+            <Typography variant="h6" component="div">
+              Nombre del Cliente: {customerName}
+            </Typography>
+            <Typography variant="h6" component="div">
+              Deuda Total: {balance}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+    </Box>
   </Grid>
-  <Grid item>
-    <Button
-      variant="contained"
-      color="success"
-      onClick={handleOpenCustomerModal}
-    >
-      Clientes Existentes
-    </Button>
-  </Grid>
-</Grid>
-      <CustomerModal
+      </Grid>
+      {/* <CustomerModal
         isOpen={isCustomerModalOpen}
         onRequestClose={handleCloseCustomerModal}
         onSelectCustomer={handleSelectCustomer}
         setCustomerId={handleSelectCustomer.customerId}
         setCustomerName={handleSelectCustomer.customerName}
-      />
+      /> */}
 
 
       {/* <form onSubmit={handleCustomerSearch} >
@@ -384,27 +419,12 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
               mb: 3,
               textAlign: 'left',
               marginBottom: '10px',
-              marginTop:'10px',
+              marginTop: '10px',
             }}
           >
             Complete la información del pago
           </Typography>
-          <Grid>
-          <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-  {customerName && (
-    <Typography variant="h6">
-      Nombre del Cliente: {customerName}
-    </Typography>
-  )}
-  {customerSearchError && (
-    <Typography variant="body2" color="error">
-      {customerSearchError}
-    </Typography>
-  )}
-  
-</Box>
 
-          </Grid>
           <Grid container spacing={3} alignItems="flex-end" >
             {/* Campos de formulario para detalles del pago */}
 
@@ -435,19 +455,19 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
 
             </Grid>
             <Grid item xs={12} sm={6}>
-              
-               <FormControl fullWidth variant="outlined" margin="normal">
-            <InputLabel>Detalles de pago</InputLabel>
-            <Select
-            required
-              value={paymentDetail}
-              onChange={(e) => setPaymentDetail(e.target.value)}
-              label="Detalles de pago"
-            >
-              <MenuItem value={"PAGO EN EFECTIVO"}>Pago en efectivo</MenuItem>
-              <MenuItem value={"TRANSFERENCIA"}>Transferencia</MenuItem>
-            </Select>
-          </FormControl>
+
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel>Detalles de pago</InputLabel>
+                <Select
+                  required
+                  value={paymentDetail}
+                  onChange={(e) => setPaymentDetail(e.target.value)}
+                  label="Detalles de pago"
+                >
+                  <MenuItem value={"PAGO EN EFECTIVO"}>Pago en efectivo</MenuItem>
+                  <MenuItem value={"TRANSFERENCIA"}>Transferencia</MenuItem>
+                </Select>
+              </FormControl>
 
 
 
@@ -583,23 +603,23 @@ const [paymentDetailsForPDF,setPaymentDetailsForPDF] = useState("");
             >
               Generar Pago con Detalles
             </Button>
-            
+
           </Grid>
         </Grid>
-        
+
       )}
       <Dialog open={isDialogOpen} onClose={() => handlePrintConfirmation(false)}>
-  <DialogTitle>¿Desea imprimir el pago realizado?</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Seleccione si desea imprimir el pago antes de continuar.
-    </DialogContentText>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => handlePrintConfirmation(true)}>Sí, imprimir</Button>
-    <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
-  </DialogActions>
-</Dialog>
+        <DialogTitle>¿Desea imprimir el pago realizado?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Seleccione si desea imprimir el pago antes de continuar.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handlePrintConfirmation(true)}>Sí, imprimir</Button>
+          <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

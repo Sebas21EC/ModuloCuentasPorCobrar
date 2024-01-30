@@ -1,51 +1,33 @@
 import React from 'react';
 import Table from '../Tables/Table';
 
-function AccountStatusTable({ accountstatus, onEditClick, onDeleteClick, onViewClick }) {
-  // Crear una nueva matriz de datos con un pago en cada fila
-  const flattenedData = Array.isArray(accountstatus) && accountstatus.length > 0
-    ? accountstatus.reduce((acc, account) => {
-      // Verificar que cada cuenta tiene un cliente y pagos antes de proceder
-      if (account.customer && Array.isArray(account.customer.payments)) {
-        const customer = account.customer;
-        const payments = customer.payments;
+function AccountStatusTable({ accountstatus, onViewClick }) {
+  const flattenedData = accountstatus && accountstatus.statement
+    ? accountstatus.statement.map(statementItem => ({
+        date: statementItem.date,
+        customerId: accountstatus.customer.customerId,
+        customerName: accountstatus.customer.customerName,
+        customerAddress: accountstatus.customer.customerAddress,
+        customerEmail: accountstatus.customer.customerEmail,
+        customerPhone: accountstatus.customer.customerPhone,
+        type: statementItem.type,
+        id: statementItem.id,
+        debe: statementItem.debe,
+        haber: statementItem.haber,
+      }))
+    : [];
 
-        // Por cada pago, crear una fila de datos
-        payments.forEach(payment => {
-          const row = {
-            date: account.date,
-            customerId: customer.customerId,
-            customerName: customer.customerName,
-            customerEmail: customer.customerEmail,
-            customerPhone: customer.customerPhone,
-            customerAddress: customer.customerAddress,
-            paymentId: payment.paymentId,
-            paymentDate: payment.paymentDate,
-            totalAmount: payment.totalAmount,
-            // Asegúrate de que bankAccount y paymentDetails son objetos antes de acceder a sus propiedades
-            bankName: payment.bankAccount?.bankName || '',
-            bankAccountNumber: payment.bankAccount?.bankAccountNumber || '',
-            accountType: payment.bankAccount?.accountType || '',
-            invoiceId: payment.paymentDetails?.[0]?.invoiceId || '',
-            amountPaid: payment.paymentDetails?.[0]?.amountPaid || '',
-          };
-          acc.push(row);
-        });
-      }
-      return acc;
-    }, [])
-    : []; 
-  console.log(flattenedData);
   const columns = [
     { Header: 'Fecha', accessor: 'date' },
     { Header: 'Cliente ID', accessor: 'customerId' },
     { Header: 'Cliente', accessor: 'customerName' },
     { Header: 'Dirección', accessor: 'customerAddress' },
-    { Header: 'Payment ID', accessor: 'paymentId' },
-    { Header: 'Payment Date', accessor: 'paymentDate' },
-    { Header: 'Total Amount', accessor: 'totalAmount' },
-    { Header: 'Bank Name', accessor: 'bankName' },
-    { Header: 'Invoice ID', accessor: 'invoiceId' },
+    { Header: 'Email', accessor: 'customerEmail' },
+    { Header: 'Teléfono', accessor: 'customerPhone' },
+    { Header: 'Tipo', accessor: 'type' },
+    { Header: 'ID', accessor: 'id' },
+    { Header: 'Debe', accessor: 'debe' },
+    { Header: 'Haber', accessor: 'haber' },
   ];
 
   return (
@@ -57,8 +39,6 @@ function AccountStatusTable({ accountstatus, onEditClick, onDeleteClick, onViewC
         canDelete={false}
         canView={true}
         onViewClick={onViewClick}
-        onDeleteClick={onDeleteClick}
-        onEditClick={onEditClick}
       />
     </>
   );

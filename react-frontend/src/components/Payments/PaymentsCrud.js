@@ -8,6 +8,7 @@ import RowDetailsModal from '../Modals/RowDetailsModal';
 import TitleSection from '../Sidebar/TitleSection';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Autocomplete from '@mui/material/Autocomplete';
 import {
   Button,
   Container,
@@ -25,8 +26,8 @@ function PaymentCrud() {
   const [columns, setColumns] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(""); 
+  const [endDate, setEndDate] = useState("");
   const currentPayments = payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const [clienteCedula, setClienteCedula] = useState('');
 
@@ -35,12 +36,22 @@ function PaymentCrud() {
       let url = `${API_BASE_URL}/Payment`;
 
       // Agregar lógica de filtro por cédula del cliente y fechas
-      if (clienteCedula && startDate && endDate) {
-        url += `/client/${clienteCedula}/${startDate}/${endDate}`;
-      }
+      // if (clienteCedula && startDate && endDate) {
+      //   url += `/client/${clienteCedula}/${startDate}/${endDate}`;
+      // }
 
+      if (clienteCedula) {
+        url += `/client/${clienteCedula}`;
+        if (startDate) {
+          url += `/${startDate}`;
+          if (endDate) {
+            url += `/${endDate}`;
+          }
+        }
+      }
       const response = await axios.get(url);
       setPayments(response.data.data);
+      console.log(response);
     } catch (err) {
       console.error(err);
       alert('Hubo un problema al cargar los pagos.');
@@ -83,9 +94,8 @@ function PaymentCrud() {
   };
   const handleClearClick = async () => {
     setClienteCedula(''); // Limpiar cédula
-    setStartDate(null);   // Limpiar fecha de inicio
-    setEndDate(null);     // Limpiar fecha de fin
-
+    setStartDate("");   // Usar cadena vacía
+    setEndDate("");     // Usar cadena vacía
     // Recargar todos los pagos
     try {
       const response = await axios.get(`${API_BASE_URL}/Payment`);
@@ -95,6 +105,33 @@ function PaymentCrud() {
       alert('Hubo un problema al recargar los pagos.');
     }
   };
+
+  const [customers, setCustomers] = useState([]);
+  const [allCustomers, setAllCustomers] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/Customer`);
+        setCustomers(response.data.data);
+        setAllCustomers(response.data.data);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
+  useEffect(() => {
+    const filteredCustomers = allCustomers.filter((customer) =>
+      customer.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
+      customer.customerId.toString().includes(searchText)
+    );
+    setCustomers(filteredCustomers);
+  }, [searchText, allCustomers]);
 
   return (
     <Container>
@@ -111,7 +148,7 @@ function PaymentCrud() {
       <Box sx={{ marginBottom: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={3}>
-            <TextField
+            {/* <TextField
               id="cliente-cedula"
               label="Cédula del Cliente"
               type="text"
@@ -119,14 +156,23 @@ function PaymentCrud() {
               value={clienteCedula}
               onChange={handleClienteCedulaChange}
             />
-            {/* <Button variant="outlined" onClick={handleOpenModal}>
-                Seleccionar Cliente
-            </Button>
-            <CustomerModal
-                isOpen={isModalOpen}
-                onRequestClose={handleCloseModal}
-                onSelectCustomer={handleSelectCustomer}
-            /> */}
+             */}
+             <Autocomplete
+            id="customer-search-select"
+            options={customers}
+            getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
+            
+            renderInput={(params) => <TextField {...params} label="Buscar cliente" />}
+            value={selectedCustomer}
+            onChange={(event, newValue) => {
+              setSelectedCustomer(newValue);
+              setClienteCedula(newValue ? newValue.customerId : '');
+            }}
+            onInputChange={(event, newInputValue) => {
+              setSearchText(newInputValue);
+            }}
+          />
+            
           </Grid>
           <Grid item xs={6} sm={
             3}>

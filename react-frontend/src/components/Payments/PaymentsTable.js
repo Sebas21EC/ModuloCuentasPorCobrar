@@ -12,7 +12,7 @@ function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
     { Header: 'DETALLE DE PAGO', accessor: 'paymentDetail' },
     { Header: 'MONTO', accessor: 'paymentAmount' },
     { Header: 'FECHA', accessor: 'paymentDate' },
-    { Header: 'IMPRESO', accessor: 'isPrinted', format: (isPrinted) => isPrinted ? 'SÍ' : 'NO' }
+    // { Header: 'IMPRESO', accessor: 'isPrinted', format: (isPrinted) => isPrinted ? 'SÍ' : 'NO' }
   ];
   
   // Asumiendo que 'payments' es ahora un array directamente

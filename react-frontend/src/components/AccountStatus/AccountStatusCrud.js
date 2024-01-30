@@ -1,114 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { API_BASE_URL, API_AUDIT_URL } from "../../config";
-import RowDetailsModal from '../Modals/RowDetailsModal';
-import TitleSection from '../Sidebar/TitleSection';
+import { API_BASE_URL } from "../../config";
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { Button, Container, Box, Grid } from '@mui/material';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import {
-  Button,
-  Container,
-  Box,
-  Grid
-} from '@mui/material';
-import TextField from '@mui/material/TextField';
 import AccountStatusTable from './AccounStatusTable';
-
-
+import TitleSection from '../Sidebar/TitleSection';
+import AccountStatusPDF from '../PDF/AccountStatusPDF';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,Typography } from '@mui/material';
 function AccountStatus() {
   const [accountStatus, setAccountStatus] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
-  const navigate = useNavigate();
-  const [columns, setColumns] = useState("");
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const currentAccountStatus = accountStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
+  const [showTable, setShowTable] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [clienteCedula, setClienteCedula] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
-  const handleSearchClick = async () => {
-    try {
-      let url = `${API_BASE_URL}/StatusAccount`;
-      if (clienteCedula && startDate && endDate) {
-        url += `/${clienteCedula}/${startDate}/${endDate}`;
-      }
-  
-      const response = await axios.get(url);
-      console.log("URL:", url);
-      console.log("Respuesta:", response.data);
-  
-      // Comprueba si la respuesta es un objeto y contiene el campo 'data'
-      if (response.data && response.data.data && response.data.data.customer) {
-        // Establece accountStatus con el array de payments del cliente
-        setAccountStatus([response.data.data]); // Envuelve el objeto en un array
-      } else {
-        // Si no, muestra un error o maneja la situación como consideres apropiado
-        console.error("Formato de respuesta inesperado:", response.data);
-        alert('El formato de los datos recibidos es incorrecto.');
-      }
-    } catch (err) {
-      console.error("Error al cargar los pagos:", err);
-      alert('Hubo un problema al cargar los pagos.');
-    }
+  const [customers, setCustomers] = useState([]);
+  const [allCustomers, setAllCustomers] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handlePrintAccountStatus = () => {
+
+    setIsDialogOpen(true); // Abre el diálogo al hacer clic
   };
-  
-  
 
+  const handlePrintConfirmation = (shouldPrint) => {
+    const date = {
+      startDate: startDate,
+      endDate: endDate
+    };
+    if (shouldPrint) {
+      AccountStatusPDF(accountStatus, date);
+    }
+    setIsDialogOpen(false);
+  };
 
   useEffect(() => {
-    // Cargar todos los pagos al inicio
-    const fetchaccountStatus = async () => {
+    const fetchCustomers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
-        console.log(response.data.data);
-
-        setAccountStatus(response.data.data);
-      } catch (err) {
-        console.error(err);
-        alert('Hubo un problema al cargar los pagos.');
+        const response = await axios.get(`${API_BASE_URL}/Customer`);
+        setCustomers(response.data.data);
+        setAllCustomers(response.data.data);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
       }
     };
 
-    fetchaccountStatus();
+    fetchCustomers();
   }, []);
 
-  
-  const handleViewClick = (item) => {
-    setSelectedRow(item);
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-  const handleStartDateChange = (event) => {
-    setStartDate(event.target.value);
-  };
-  const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
-  };
-  const handleClienteCedulaChange = (event) => {
-    setClienteCedula(event.target.value);
-  };
-  const handleClearClick = async () => {
-    setClienteCedula(''); // Limpiar cédula
-    setStartDate(null);   // Limpiar fecha de inicio
-    setEndDate(null);     // Limpiar fecha de fin
+  useEffect(() => {
+    const filteredCustomers = allCustomers.filter((customer) =>
+      customer.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
+      customer.customerId.toString().includes(searchText)
+    );
+    setCustomers(filteredCustomers);
+  }, [searchText, allCustomers]);
 
-    // Recargar todos los pagos
+  const handleSearchClick = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/StatusAccount`);
+      let url = `${API_BASE_URL}/accountstatement/${clienteCedula}/${startDate}/${endDate}`;
+      const response = await axios.get(url);
 
-      console.log(response.data.data[0]);
-      setAccountStatus(response.data.data);
+      // Asegúrate de que response.data contiene la propiedad 'data'
+      if (response.data && response.data.data) {
+        // Actualiza el estado con los datos recibidos
+
+
+        setAccountStatus(response.data.data);
+        console.log(response.data.data);
+        setShowTable(true);
+      } else {
+        alert('No se encontraron datos para la búsqueda realizada.');
+      }
     } catch (err) {
-      console.error(err);
-      alert('Hubo un problema al recargar los pagos.');
+      console.error("Error al cargar los estados de cuenta:", err);
+      alert('Hubo un problema al cargar los estados de cuenta.');
     }
   };
+
+  const handleClearClick = () => {
+    setClienteCedula('');
+    setStartDate("");
+    setEndDate("");
+    setShowTable(false);
+  };
+
+
 
   return (
     <Container>
@@ -117,35 +100,36 @@ function AccountStatus() {
           <Grid item>
             <TitleSection title="Estados de Cuenta" IconComponent={PriceChangeIcon} />
           </Grid>
-          <Grid item>
-           
-          </Grid>
         </Grid>
       </Box>
       <Box sx={{ marginBottom: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={3}>
-            <TextField
-              id="cliente-cedula"
-              label="Cédula del Cliente"
-              type="text"
-              fullWidth
-              value={clienteCedula}
-              onChange={handleClienteCedulaChange}
+            <Autocomplete
+              id="customer-search-select"
+              options={customers}
+              getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
+
+              renderInput={(params) => <TextField {...params} label="Buscar cliente" />}
+              value={selectedCustomer}
+              onChange={(event, newValue) => {
+                setSelectedCustomer(newValue);
+                setClienteCedula(newValue ? newValue.customerId : '');
+              }}
+              onInputChange={(event, newInputValue) => {
+                setSearchText(newInputValue);
+              }}
             />
           </Grid>
-          <Grid item xs={6} sm={
-            3}>
+          <Grid item xs={6} sm={3}>
             <TextField
               id="start-date"
               label="Fecha de inicio"
               type="date"
               fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
+              InputLabelProps={{ shrink: true }}
               value={startDate}
-              onChange={handleStartDateChange}
+              onChange={(event) => setStartDate(event.target.value)}
             />
           </Grid>
           <Grid item xs={6} sm={3}>
@@ -154,17 +138,13 @@ function AccountStatus() {
               label="Fecha de fin"
               type="date"
               fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
+              InputLabelProps={{ shrink: true }}
               value={endDate}
-              onChange={handleEndDateChange}
+              onChange={(event) => setEndDate(event.target.value)}
             />
-
-           
           </Grid>
           <Grid item xs={12} sm={2}>
-          <Button
+            <Button
               variant="contained"
               color="success"
               onClick={handleSearchClick}
@@ -172,27 +152,51 @@ function AccountStatus() {
             >
               Buscar
             </Button>
-            </Grid>
-            <Grid item xs={12} sm={1}>
-            <DeleteForeverIcon size="large"
+          </Grid>
+          <Grid item xs={12} sm={1}>
+            <DeleteForeverIcon
               onClick={handleClearClick}
-              // Añade estilos aquí para alinear el ícono con tu diseño
-              style={{ cursor: 'pointer', color: 'grey', marginLeft: '10px', size:'large'}}
+              style={{ cursor: 'pointer', color: 'grey', marginLeft: '10px', size: 'large' }}
             />
-            </Grid>
-        
+          </Grid>
         </Grid>
       </Box>
-      <AccountStatusTable accountstatus={accountStatus} onViewClick={handleViewClick} columns={columns} />
-      {/* <RowDetailsModal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        rowDetails={selectedRow}
-        columns={AccountStatusTable.columns}
-      /> */}
+      {showTable && (
+        <>
+          <Grid>
+            <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+              {customerName && (
+                <Typography variant="h6">
+                  Saldo Inicial {accountStatus.beginningBalance.toFixed(2)}
+                  Saldo Final {accountStatus.endingBalance.toFixed(2)}
+                </Typography>
+              )}              
+            </Box></Grid>
+
+          <AccountStatusTable accountstatus={accountStatus} />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrintAccountStatus}
+          >
+            Imprimir Estado de Cuenta
+          </Button>
+        </>
+      )}
+      <Dialog open={isDialogOpen} onClose={() => handlePrintConfirmation(false)}>
+        <DialogTitle>¿Desea imprimir el estado de cuenta?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Seleccione si desea imprimir el estado de cuenta antes de continuar.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handlePrintConfirmation(true)}>Sí, imprimir</Button>
+          <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
-
 }
 
 export default AccountStatus;
