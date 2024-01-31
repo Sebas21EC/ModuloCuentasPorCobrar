@@ -20,8 +20,8 @@ function PaymentDetailsTable({ paymentDetails, onViewClick}) { // Cambiar paymen
   canView={true}
           columns={columns}
           data={paymentDetails} 
-          onViewClick={onViewClick}// Cambiar a paymentDetails directamente
-          // Aquí puedes añadir otros props si son necesarios
+          onViewClick={onViewClick}
+          canPrint={false}
         />
       ) : (
         <p>No hay datos para mostrar.</p> // O algún otro UI de carga o error.

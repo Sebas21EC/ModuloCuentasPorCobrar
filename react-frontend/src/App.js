@@ -70,7 +70,7 @@ function App() {
               body: JSON.stringify({
                 action: "Sesion ended",
                 description: `User : ${username}`,
-                ip: clientIP,
+                ip: '0.0.0.0',
                 date: formattedDate,
                 functionName: "AR-LOGIN",
                 observation: `${username} ended session`,
@@ -106,7 +106,7 @@ function App() {
        
         <Sidebar onLogout={handleLogout}  />
         
-        <main style={{ flexGrow: 1, overflowY: 'auto', backgroundColor:'#EAECF9'}}>
+        <main style={{ flexGrow: 1, overflowY: 'auto', backgroundColor:'#EAECF9', padding:'1rem'}}>
           <Routes> {/* Routes component wraps Route definitions */}
             <Route path="/" element={<Home/>} />
             <Route path="/estado-de-cuenta" element={<AccountStatusCrud/>} />

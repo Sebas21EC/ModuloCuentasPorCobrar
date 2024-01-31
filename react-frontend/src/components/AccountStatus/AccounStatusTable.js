@@ -43,6 +43,7 @@ function AccountStatusTable({ accountstatus, onViewClick }) {
         canEdit={false}
         canDelete={false}
         canView={true}
+        canPrint={false}
         onViewClick={onViewClick}
 
       />

@@ -7,7 +7,9 @@ import RowDetailsModal from '../Modals/RowDetailsModal';
 import TitleSection from '../Sidebar/TitleSection';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import PaymentByID from '../PDF/PaymentByID';
 import Autocomplete from '@mui/material/Autocomplete';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import {
   Button,
   Container,
@@ -22,7 +24,8 @@ function PaymentCrud() {
   const [payments, setPayments] = useState([]);
   const [page, ] = useState(0);
   const [rowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
-  
+  const [openPrintDialog, setOpenPrintDialog] = useState(false);
+
   const [columns] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,8 +33,69 @@ function PaymentCrud() {
   const [endDate, setEndDate] = useState("");
   const currentPayments = payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const [clienteCedula, setClienteCedula] = useState('');
-
+  const handlePrintClick = (item) => {
+    setSelectedRow(item);
+    setOpenPrintDialog(true);
+  };
+  
+  // Esta función maneja la confirmación para imprimir.
+  const handlePrintConfirmation = (shouldPrint) => {
+    setOpenPrintDialog(false);
+    if (shouldPrint && selectedRow) {
+      fetchAndPrintPaymentDetails(selectedRow.paymentId);
+    }
+  };
+  
+  // Esta función asincrónica obtiene los detalles del pago y genera el PDF.
+  const fetchAndPrintPaymentDetails = async (paymentId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/PaymentDetail/report/${paymentId}`);
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read/Print Payments details",
+          description: `User ${username} read/print payments details`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-PAYMENT-REPORT",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //     
+      // Ahora que tienes la respuesta, llama a la función que generará el PDF.
+      PaymentByID(response.data.data);
+    } catch (error) {
+      console.error('Error al obtener los detalles del pago:', error);
+      // Aquí deberías manejar el error adecuadamente, por ejemplo, mostrando una notificación al usuario.
+    }
+  };
+  
+  
+  const canSearch = () => {
+    const startDateValue = new Date(startDate);
+    const endDateValue = new Date(endDate);
+    return (
+      startDateValue &&
+      endDateValue &&
+      clienteCedula &&
+      startDateValue <= endDateValue
+    );
+  };
   const handleSearchClick = async () => {
+    if (!canSearch()) {
+      alert('Por favor asegúrese de que todos los campos estén llenos y que las fechas sean correctas.');
+      return;
+    }
     try {
       let url = `${API_BASE_URL}/Payment`;
 
@@ -80,6 +144,28 @@ function PaymentCrud() {
     const fetchPayments = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/Payment`);
+        //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Payments",
+          description: `User ${username} read data from Payments`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-PAYMENTS-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
        
         setPayments(response.data.data);
       } catch (err) {
@@ -92,6 +178,7 @@ function PaymentCrud() {
 
  
   const handleViewClick = (item) => {
+    
     setSelectedRow(item);
     setIsModalOpen(true);
   };
@@ -113,6 +200,29 @@ function PaymentCrud() {
     try {
       const response = await axios.get(`${API_BASE_URL}/Payment`);
       setPayments(response.data.data);
+       //Auditoria
+       const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+       const username = responseLogin ? responseLogin.username : null;
+       const token = responseLogin ? responseLogin.token : null;
+       const currentDate = new Date();
+       const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+       await fetch(`${API_AUDIT_URL}/audit`, {
+         method: "POST",
+         body: JSON.stringify({
+           action: "Read Payments",
+           description: `User ${username} read data from Payments`,
+           ip: clientIP,
+           date: formattedDate,
+           functionName: "AR-PAYMENTS-READ",
+           observation: ` ${username}`,
+         }),
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: `Bearer ${token}`,
+         },
+       });
+       //    
+        
     } catch (err) {
       alert('Hubo un problema al recargar los pagos.');
     }
@@ -127,6 +237,30 @@ function PaymentCrud() {
     const fetchCustomers = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/Customer`);
+
+         //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Customers",
+          description: `User ${username} read data from customers`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-CUSTOMERS-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
+       
         setCustomers(response.data.data);
         setAllCustomers(response.data.data);
       } catch (error) {
@@ -138,7 +272,7 @@ function PaymentCrud() {
   }, []);
 
   useEffect(() => {
-    const filteredCustomers = allCustomers.filter((customer) =>
+    const filteredCustomers = (allCustomers || []).filter((customer) =>
       customer.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
       customer.customerId.toString().includes(searchText)
     );
@@ -172,7 +306,8 @@ function PaymentCrud() {
              */}
              <Autocomplete
             id="customer-search-select"
-            options={customers}
+  options={customers || []} // Proporciona un arreglo vacío como valor predeterminado
+            // options={customers}
             getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
             
             renderInput={(params) => <TextField {...params} label="Buscar cliente" />}
@@ -222,6 +357,7 @@ function PaymentCrud() {
               color="success"
               onClick={handleSearchClick}
               fullWidth
+              disabled={!canSearch()}
             >
               Buscar
             </Button>
@@ -236,13 +372,26 @@ function PaymentCrud() {
         
         </Grid>
       </Box>
-      <PaymentTable payments={payments} onViewClick={handleViewClick} columns={columns} />
+      <PaymentTable payments={payments} onViewClick={handleViewClick} columns={columns} onPrintClick={handlePrintClick} />
       <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
         rowDetails={selectedRow}
         columns={PaymentTable.columns}
       />
+      <Dialog open={openPrintDialog} onClose={() => setOpenPrintDialog(false)}>
+  <DialogTitle>¿Desea imprimir el detalle de este pago?</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Seleccione si desea imprimir detalle de pago antes de continuar.
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => handlePrintConfirmation(true)}>Sí, imprimir</Button>
+    <Button onClick={() => handlePrintConfirmation(false)}>No, continuar</Button>
+  </DialogActions>
+</Dialog>
+
     </Container>
   );
 
