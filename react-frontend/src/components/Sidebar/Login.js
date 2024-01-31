@@ -77,6 +77,7 @@ function Login({ onLogin }) {
         saveToSessionStorage("responseLogin", dataSession);
 
         //Auditoria
+
       const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
       const username1 = responseLogin ? responseLogin.username : null;
       const currentDate = new Date();
@@ -99,6 +100,8 @@ function Login({ onLogin }) {
       //                  
       
 
+
+ console.log(response);
         onLogin();
       } else {
         // Manejo de errores de inicio de sesión
