@@ -80,7 +80,7 @@ function Login({ onLogin }) {
                 
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-        await fetch(`${API_AUDIT_URL}/audit`, {
+       var response =  await fetch(`${API_AUDIT_URL}/audit`, {
           method: "POST",
           body: JSON.stringify({
             action: "Sesion started",
@@ -95,7 +95,7 @@ function Login({ onLogin }) {
             Authorization: `Bearer ${token}`,
           },
         });
-
+ console.log(response);
         onLogin();
       } else {
         // Manejo de errores de inicio de sesión
