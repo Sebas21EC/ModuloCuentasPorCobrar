@@ -95,6 +95,8 @@ function Login({ onLogin }) {
             Authorization: `Bearer ${token}`,
           },
         });
+         console.log("Sebas");
+
  console.log(response);
         onLogin();
       } else {
