@@ -14,7 +14,7 @@ function DeleteModal({ isOpen, onClose, entity, onDelete, title, children }) {
       await onDelete(entity); // Llama a la función onDelete pasada como prop
       onClose(); // Cierra el modal después de la eliminación
     } catch (err) {
-      console.error("Error al eliminar:", err);
+      alert("Error al eliminar");
       // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje de error en el UI
     }
   };

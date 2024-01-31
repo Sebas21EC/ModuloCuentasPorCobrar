@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "../../axiosSettings";
 import BankAccountTable from "./BankAccountTable";
 import AddBankAccountModal from "./AddBankAccountModal";
@@ -7,6 +7,7 @@ import RowDetailsModal from "../Modals/RowDetailsModal";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TitleSection from '../Sidebar/TitleSection';
 import { API_BASE_URL, API_AUDIT_URL } from "../../config";
+import { IPContext } from '../../IPContext';
 
 import {
   Button,
@@ -23,7 +24,7 @@ function BankAccountCrud() {
   const [selectedAccount, setSelectedAccount] = useState(null)
   const [columns] = useState("");
   
-
+  const clientIP = useContext(IPContext);
 
 
   useEffect(() => {
@@ -33,19 +34,19 @@ function BankAccountCrud() {
   const Load = async () => {
     try {
       const result = await axios.get(`${API_BASE_URL}/BankAccount`);
-      console.log(result);
+      
       //Auditoria
       const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
       const username = responseLogin ? responseLogin.username : null;
       const token = responseLogin ? responseLogin.token : null;
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+      await fetch(`${API_AUDIT_URL}/audit`, {
         method: "POST",
         body: JSON.stringify({
           action: "Read Bank Accounts",
           description: `User ${username} read data from Bank Accounts`,
-          ip: "192.168.0.102",
+          ip: clientIP,
           date: formattedDate,
           functionName: "AR-BANK-ACCOUNTS-READ",
           observation: ` ${username}`,

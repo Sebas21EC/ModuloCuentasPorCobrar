@@ -1,4 +1,3 @@
-
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -6,7 +5,6 @@ const generatePDF = (details) => {
   const { paymentDetailsToSend, customerName, customerId, paymentDate, paymentId, paymentDetail, bankAccountId, paymentAmount } = details;
 
   const doc = new jsPDF();
-
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 10; // Margen de 10 unidades por cada lado
@@ -44,6 +42,7 @@ const generatePDF = (details) => {
       1: { halign: 'left', cellWidth: '25%' }
     },
   });
+
   const paymentInfo = [
     ['Detalle de Pago', paymentDetail],
     ['ID de Cuenta Bancaria', bankAccountId],
@@ -53,7 +52,6 @@ const generatePDF = (details) => {
   doc.setFontSize(10); // Tamaño de fuente para "Detalles del pago"
   let textYPosition = doc.lastAutoTable.finalY + 5; // Ajusta la posición 'y' del texto para reducir el espacio
   doc.text('Detalles del pago', 11 + margin, textYPosition);
-
 
   autoTable(doc, {
     body: paymentInfo,
@@ -66,18 +64,23 @@ const generatePDF = (details) => {
       1: { halign: 'left', cellWidth: '45%' }
     },
   });
-  textYPosition = doc.lastAutoTable.finalY + 5; // Reduce el espacio antes del texto "Monto cancelado por factura"
-  doc.setFontSize(10); // Tamaño de fuente para "Monto cancelado por factura"
-  doc.text('Monto cancelado por factura', 11 + margin, textYPosition);
 
   // Datos de la tabla de detalles de pago
   const paymentDetailsHead = [['ID de Factura', 'Cantidad Aplicada']];
   const paymentDetailsBody = paymentDetailsToSend.map(detail => [detail.invoiceId, detail.amountApplied]);
 
+  doc.setFontSize(10); // Tamaño de fuente para "Monto cancelado por factura"
+  doc.text('Monto cancelado por factura', 11 + margin, doc.lastAutoTable.finalY + 15);
+
+  // Verificar si es necesario agregar una nueva página para la última tabla
+  if (doc.lastAutoTable.finalY + 40 >= pageHeight) {
+    doc.addPage();
+  }
+
   autoTable(doc, {
     head: paymentDetailsHead,
     body: paymentDetailsBody,
-    startY: textYPosition+5, // Continuar después de la tabla anterior
+    startY: doc.lastAutoTable.finalY + 20, // Continuar después del texto anterior
     theme: 'striped',
     tableWidth: '75%', // Ajusta el ancho de la tabla
     styles: { font: 'helvetica' },
@@ -87,8 +90,8 @@ const generatePDF = (details) => {
   doc.setFontSize(12);
   doc.setTextColor(100);
   const currentDate = new Date().toLocaleString(); // Fecha y hora del sistema
-  doc.text('Este documento contiene un detalle de los pagos que ha realizado', 20, doc.internal.pageSize.height - 30);
-  doc.text(`Documento generado: ${currentDate}`, 20, doc.internal.pageSize.height - 20);
+  doc.text('Este documento contiene un detalle de los pagos que ha realizado', 20, pageHeight - 30);
+  doc.text(`Documento generado: ${currentDate}`, 20, pageHeight - 20);
 
   // Guarda el PDF con un nombre específico
   doc.save('detalle_pago.pdf');

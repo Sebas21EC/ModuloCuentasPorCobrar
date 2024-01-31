@@ -11,7 +11,7 @@ function DeleteBankAccountModal({ show, onClose, account, onLoad }) {
       onLoad();
     } catch (err) {
       // Manejo de errores
-      console.error("Error al eliminar la cuenta bancaria:", err);
+      alert("Error al eliminar la cuenta bancaria");
     }
     onClose();
   };

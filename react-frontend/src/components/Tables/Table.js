@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit = true, canDelete = true, canView = true }) => {
 
-
   // default column component
   const defaultColumn = useMemo(() => {
     return {
@@ -51,13 +50,12 @@ const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit
       defaultColumn,
       initialState: { pageSize: 5 },
     },
-
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination,
-    
   );
+
   const totalPageCount = Math.ceil(rows.length / pageSize);
   const calculatedPageOptions = Array.from({ length: totalPageCount }, (_, index) => index + 1);
 
@@ -116,9 +114,7 @@ const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit
           })}
         </TableBody>
       </StyledTable>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-
-
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Button
             variant="outlined"
@@ -152,44 +148,41 @@ const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit
           >
             {">>"}
           </Button>
-
-          <span style={{ marginLeft: '20px', marginRight: '10px' }}>
-            Página <strong>{pageIndex + 1}</strong> de {pageOptions.length}
-          </span>
-
-          <FormControl variant="outlined" size="small" style={{ marginRight: '10px', minWidth: '120px' }}>
-            <InputLabel>Ir a la página:</InputLabel>
-            <Select
-              label="Ir a la página:"
-              value={pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
-              }}
-            >
-              {calculatedPageOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" size="small">
-            <InputLabel>Filas por página</InputLabel>
-            <Select
-              label="Filas por página"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-            >
-              {[5, 10, 20, 30].map((pageSizeOption) => (
-                <MenuItem key={pageSizeOption} value={pageSizeOption}>
-                  {pageSizeOption}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </div>
+        <span style={{ marginLeft: '20px', marginRight: '10px', fontSize: '14px' }}>
+          Página <strong>{pageIndex + 1}</strong> de {pageOptions.length}
+        </span>
+        <FormControl variant="outlined" size="small" style={{ marginRight: '10px', minWidth: '120px' }}>
+          <InputLabel>Ir a la página:</InputLabel>
+          <Select
+            label="Ir a la página:"
+            value={pageIndex + 1}
+            onChange={(e) => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0;
+              gotoPage(page);
+            }}
+          >
+            {calculatedPageOptions.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" size="small">
+          <InputLabel>Filas por página</InputLabel>
+          <Select
+            label="Filas por página"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20, 30].map((pageSizeOption) => (
+              <MenuItem key={pageSizeOption} value={pageSizeOption}>
+                {pageSizeOption}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </div>
     </>
   );

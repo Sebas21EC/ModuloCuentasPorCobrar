@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import axios from "../../axiosSettings";
 import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 
@@ -14,8 +14,10 @@ import {
   Select,
   MenuItem
 } from "@mui/material";
+import { IPContext } from '../../IPContext';
 
 function AddBankAccountModal({ open, onClose, onLoad }) {
+  const clientIP = useContext(IPContext);
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankName, setBankName] = useState("");
   const [bankAccountName, setBankAccountName] = useState("");
@@ -44,12 +46,12 @@ function AddBankAccountModal({ open, onClose, onLoad }) {
       const token = responseLogin ? responseLogin.token : null;
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+      await fetch(`${API_AUDIT_URL}/audit`, {
         method: "POST",
         body: JSON.stringify({
           action: "Create Bank Accounts",
           description: `User ${username} create a new Bank Account`,
-          ip: "192.168.0.102",
+          ip: clientIP,
           date: formattedDate,
           functionName: "AR-BANK-ACCOUNTS-CREATE",
           observation: ` ${username}`,

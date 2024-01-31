@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from "../../config";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { Button, Container, Box, Grid } from '@mui/material';
@@ -9,24 +8,23 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AccountStatusTable from './AccounStatusTable';
 import TitleSection from '../Sidebar/TitleSection';
 import AccountStatusPDF from '../PDF/AccountStatusPDF';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
+import { IPContext } from '../../IPContext';
+import { API_BASE_URL, API_AUDIT_URL } from "../../config";
 function AccountStatus() {
+  const clientIP = useContext(IPContext);
   const [accountStatus, setAccountStatus] = useState([]);
-
   const [showTable, setShowTable] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
   const [clienteCedula, setClienteCedula] = useState('');
-  const [customerName, setCustomerName] = useState('');
-
-
+  const [customerName] = useState('');
   const [customers, setCustomers] = useState([]);
   const [allCustomers, setAllCustomers] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
+
 
   const handlePrintAccountStatus = () => {
 
@@ -43,10 +41,6 @@ function AccountStatus() {
     }
     setIsDialogOpen(false);
   };
-  
-  
-
-
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -55,9 +49,8 @@ function AccountStatus() {
         setCustomers(response.data.data);
         setAllCustomers(response.data.data);
       } catch (error) {
-        console.error("Error fetching customers:", error);
+        console.error("Error cargando los clientes:", error);
 
-       
       }
     };
 
@@ -88,22 +81,43 @@ function AccountStatus() {
     try {
       let url = `${API_BASE_URL}/accountstatement/${clienteCedula}/${startDate}/${endDate}`;
       const response = await axios.get(url);
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Account Status",
+          description: `User ${username} read data from Account Status`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-ACCOUNT-STATUS",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //     
+
 
       // Asegúrate de que response.data contiene la propiedad 'data'
       if (response.data && response.data.data) {
         // Actualiza el estado con los datos recibidos
 
-
-
         setAccountStatus(response.data.data);
-        console.log(response.data.data);
+
         setShowTable(true);
       } else {
         alert('No se encontraron datos para la búsqueda realizada.');
       }
 
     } catch (err) {
-      console.error("Error al cargar los estados de cuenta:", err);
+
       alert('Hubo un problema al cargar los estados de cuenta.');
     }
   };
@@ -128,11 +142,11 @@ function AccountStatus() {
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ marginBottom: 2 }}>
+      <Box sx={{ marginTop: 0,marginBottom: 1 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={3}>
             <Autocomplete
-            required
+              required
               id="customer-search-select"
               options={customers}
               getOptionLabel={(option) => `${option.customerName} (${option.customerId})`}
@@ -173,13 +187,13 @@ function AccountStatus() {
             />
           </Grid>
           <Grid item xs={12} sm={2}>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleSearchClick}
-            fullWidth
-            disabled={!canSearch()}
-          >
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleSearchClick}
+              fullWidth
+              disabled={!canSearch()}
+            >
               Buscar
             </Button>
           </Grid>
@@ -194,27 +208,38 @@ function AccountStatus() {
 
       {showTable && (
         <>
-          <Grid>
-            <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-              {customerName && (
-                <Typography variant="h6">
-                  Saldo Inicial {accountStatus.beginningBalance.toFixed(2)}
-                  Saldo Final {accountStatus.endingBalance.toFixed(2)}
-                </Typography>
-              )}              
-            </Box></Grid>
-           
-          <AccountStatusTable accountstatus={accountStatus} />
-          <Box display="flex" justifyContent="center" mt={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handlePrintAccountStatus}
-              
-            >
-              Imprimir Estado de Cuenta
-            </Button>
-          </Box>
+      <Box sx={{ flexGrow: 1, mt: 2 }}>
+  <Grid container spacing={2} alignItems="center">
+    <Grid item xs={12} sm={3}>
+      <div style={{ background: '#0B2243', border: '2px solid #ccc', padding: '5px', borderRadius: '10px',textAlign: 'center'}}>
+        <Typography variant="h7" style={{ color: 'white' , alignContent:'center'}}>
+          Saldo Inicial: {accountStatus.beginningBalance.toFixed(2)}
+        </Typography>
+      </div>
+    </Grid>
+    <Grid item xs={12} sm={3}>
+      <div style={{ background: '#0B2243',border: '2px solid #ccc', padding: '5px', borderRadius: '10px',textAlign: 'center' }}>
+        <Typography variant="h7" style={{ color: 'white' }}>
+          Saldo Final: {accountStatus.endingBalance.toFixed(2)}
+        </Typography>
+      </div>
+    </Grid>
+    <Grid item xs={12} sm={3}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handlePrintAccountStatus}
+        fullWidth // Asegura que el botón ocupe todo el ancho del Grid item
+      >
+        Imprimir Estado de Cuenta
+      </Button>
+    </Grid>
+  </Grid>
+</Box>
+
+           <AccountStatusTable accountstatus={accountStatus} />
+
+   
         </>
       )}
       <Dialog open={isDialogOpen} onClose={() => handlePrintConfirmation(false)}>

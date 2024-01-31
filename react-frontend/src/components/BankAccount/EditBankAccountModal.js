@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "../../axiosSettings";
 import {API_BASE_URL,API_AUDIT_URL} from "../../config";
-import EditModal from '../Modals/EditModal'; // Asegúrate de que la ruta es correcta
+import EditModal from '../Modals/EditModal'; 
 import { TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { IPContext } from '../../IPContext';
 
 function EditBankAccountModal({ show, onClose, account, onLoad }) {
+  const clientIP = useContext(IPContext);
   const [formData, setFormData] = useState({
     bankAccountNumber: '',
     bankName: '',
@@ -57,12 +59,12 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
       const token = responseLogin ? responseLogin.token : null;
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-      const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+      await fetch(`${API_AUDIT_URL}/audit`, {
         method: "POST",
         body: JSON.stringify({
           action: "Edit Bank Accounts",
           description: `User ${username} edit data from Bank Accounts`,
-          ip: "192.168.0.102",
+          ip: clientIP,
           date: formattedDate,
           functionName: "AR-BANK-ACCOUNTS-UPDATE",
           observation: ` ${username}`,
@@ -77,7 +79,7 @@ function EditBankAccountModal({ show, onClose, account, onLoad }) {
       onClose();
 
     } catch (err) {
-      console.error("Error al actualizar la cuenta bancaria:", err);
+      alert("Error al actualizar la cuenta bancaria");
     }
   };
 

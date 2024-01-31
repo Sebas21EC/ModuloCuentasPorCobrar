@@ -30,7 +30,7 @@ function EditModal({ show, onClose, entity, onSave, title, children }) {
       await onSave(formData); // Llama a la función onSave pasada como prop
       onClose(); // Cierra el modal después de guardar
     } catch (err) {
-      console.error("Error al guardar:", err);
+      alert("Error al guardar");
       // Maneja errores aquí
     }
   };

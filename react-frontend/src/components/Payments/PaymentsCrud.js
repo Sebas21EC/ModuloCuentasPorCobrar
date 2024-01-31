@@ -1,6 +1,5 @@
 // PaymentCrud.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect,useContext } from 'react';
 import axios from 'axios';
 import { API_BASE_URL, API_AUDIT_URL } from "../../config";
 import PaymentTable from './PaymentsTable';
@@ -16,14 +15,15 @@ import {
   Grid
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
-
+import { IPContext } from '../../IPContext';
 
 function PaymentCrud() {
+  const clientIP = useContext(IPContext);
   const [payments, setPayments] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
-  const navigate = useNavigate();
-  const [columns, setColumns] = useState("");
+  const [page, ] = useState(0);
+  const [rowsPerPage] = useState(10); // Puedes cambiar este valor por defecto
+  
+  const [columns] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startDate, setStartDate] = useState(""); 
@@ -35,10 +35,6 @@ function PaymentCrud() {
     try {
       let url = `${API_BASE_URL}/Payment`;
 
-      // Agregar lógica de filtro por cédula del cliente y fechas
-      // if (clienteCedula && startDate && endDate) {
-      //   url += `/client/${clienteCedula}/${startDate}/${endDate}`;
-      // }
 
       if (clienteCedula) {
         url += `/client/${clienteCedula}`;
@@ -50,10 +46,31 @@ function PaymentCrud() {
         }
       }
       const response = await axios.get(url);
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Payments",
+          description: `User ${username} read data from Payments`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-PAYMENTS-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //     
       setPayments(response.data.data);
-      console.log(response);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       alert('Hubo un problema al cargar los pagos.');
     }
   };
@@ -63,9 +80,9 @@ function PaymentCrud() {
     const fetchPayments = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/Payment`);
+       
         setPayments(response.data.data);
       } catch (err) {
-        console.error(err);
         alert('Hubo un problema al cargar los pagos.');
       }
     };
@@ -73,9 +90,7 @@ function PaymentCrud() {
     fetchPayments();
   }, []);
 
-  const handleAddPayment = () => {
-    navigate('/payment-registration');
-  };
+ 
   const handleViewClick = (item) => {
     setSelectedRow(item);
     setIsModalOpen(true);
@@ -89,9 +104,7 @@ function PaymentCrud() {
   const handleEndDateChange = (event) => {
     setEndDate(event.target.value);
   };
-  const handleClienteCedulaChange = (event) => {
-    setClienteCedula(event.target.value);
-  };
+  
   const handleClearClick = async () => {
     setClienteCedula(''); // Limpiar cédula
     setStartDate("");   // Usar cadena vacía
@@ -101,7 +114,6 @@ function PaymentCrud() {
       const response = await axios.get(`${API_BASE_URL}/Payment`);
       setPayments(response.data.data);
     } catch (err) {
-      console.error(err);
       alert('Hubo un problema al recargar los pagos.');
     }
   };
@@ -118,7 +130,7 @@ function PaymentCrud() {
         setCustomers(response.data.data);
         setAllCustomers(response.data.data);
       } catch (error) {
-        console.error("Error fetching customers:", error);
+        alert("Error cargando clientes");
       }
     };
 
@@ -224,7 +236,7 @@ function PaymentCrud() {
         
         </Grid>
       </Box>
-      <PaymentTable payments={currentPayments} onViewClick={handleViewClick} columns={columns} />
+      <PaymentTable payments={payments} onViewClick={handleViewClick} columns={columns} />
       <RowDetailsModal
         open={isModalOpen}
         onClose={handleCloseModal}
