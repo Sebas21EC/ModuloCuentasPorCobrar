@@ -68,5 +68,18 @@ namespace AccountsReceivableModule.Controllers
                 return BadRequest(response.Message);
             }
         }
+
+        [HttpGet("report/{paymentId}")]
+        [FunctionAuthorize("AR-PAYMENT-DETAIL-READ")]
+
+        public async Task<ActionResult<ServiceResponse<PaymentDetailService>>> GetPaymentByIdWithDetailsAndCustumer(string paymentId)
+        {
+            var response = await _paymentDetailService.GetPaymentByIdWithDetailsAndCustumer(paymentId);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

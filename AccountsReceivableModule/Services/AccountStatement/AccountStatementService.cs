@@ -31,7 +31,7 @@ namespace AccountsReceivableModule.Services
                 decimal amountPaidInvoices = await _context.Invoices.Where(i => i.CustomerId == CustomerId && i.InvoiceDate < startDate).SumAsync(i => i.AmountDue);
 
                 decimal amountPayments = await _context.Payments.Where(p => p.CustomerId == CustomerId && p.PaymentDate < startDate).SumAsync(p => p.PaymentAmount);
-           
+
                 decimal beginningBalance = amountPaidInvoices - amountPayments;
 
                 //Obtener los pagos entre las fechas proporcionadas desde la base de datos
@@ -54,36 +54,15 @@ namespace AccountsReceivableModule.Services
             return response;
         }
 
-        private  AccountStatementDto ConvertPaymentToPaymetReportDto(Customer customer, DateTime startDate, DateTime endDate, decimal beginningBalance,List<Payment> payments,List<Invoice>  invoices)
+        private AccountStatementDto ConvertPaymentToPaymetReportDto(Customer customer, DateTime startDate, DateTime endDate, decimal beginningBalance, List<Payment> payments, List<Invoice> invoices)
         {
             var accountStatementDto = new AccountStatementDto();
 
 
             accountStatementDto.BeginningBalance = beginningBalance;
 
-            //DEBE
-
-            //            
-
-            //                                          DEBE         HABER
-            //PAGO          PAG-005     12/01/2021      1000
-            //FACTURA       00-0008     15/01/2021                  1000
-            //PAGO          PAG-006     17/01/2021      2000
-            //FACTURA       00-0009     19/01/2021                  2000
-            //PAGO          PAG-007     20/01/2021      3000
-
-            //SUBTOTAL = 1000 + 2000 + 3000 = 6000-3000 = 3000
-
-            //Ahora vamos a generar un lista de AccountStatementTable para luego ordenarlas por fechas, para tener un lsitado similar al ejemplode la tabla, los valores debemos consultar en la tabla de la base de datos entre las fechas proporcionadas.
             List<AccountStatementTable> accountStatementTables = new List<AccountStatementTable>();
 
-            ////Obtener los pagos entre las fechas proporcionadas desde la base de datos
-            //var payments = _context.Payments.Where(p => p.CustomerId == customer.CustomerId && p.PaymentDate >= startDate && p.PaymentDate <= endDate).ToList();
-
-            ////Obtener las facturas entre las fechas proporcionadas
-            //var invoices = _context.Invoices.Where(i => i.CustomerId == customer.CustomerId && i.InvoiceDate >= startDate && i.InvoiceDate <= endDate).ToList();
-
-            //Recorrer los pagos y agregarlos a la lista de AccountStatementTable
             foreach (var payment in payments)
             {
                 var accountStatementTable = new AccountStatementTable();
@@ -102,7 +81,7 @@ namespace AccountsReceivableModule.Services
                 accountStatementTable.Type = "Invoice";
                 accountStatementTable.Id = invoice.InvoiceId;
                 accountStatementTable.Date = invoice.InvoiceDate;
-                accountStatementTable.Debe = invoice.AmountDue ;
+                accountStatementTable.Debe = invoice.AmountDue;
                 accountStatementTable.Haber = 0;
                 accountStatementTables.Add(accountStatementTable);
             }

@@ -11,6 +11,6 @@ namespace AccountsReceivableModule.Services
         Task<ServiceResponse<GetPaymentDetailDto>> Update(int paymentDetailId, UpdatePaymentDetailDto paymentDetail);
         Task<ServiceResponse<List<GetPaymentDetailDto>>> Delete(string paymentDetail);
         Task<ServiceResponse<bool>> AssignPaymentToInvoices(string paymentId, List<GetPaymentDetailDto> paymentDetails);
-
+        Task<ServiceResponse<PaymentsReportDto>> GetPaymentByIdWithDetailsAndCustumer(string paymentId);
     }
 }

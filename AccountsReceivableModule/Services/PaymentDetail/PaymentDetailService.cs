@@ -159,5 +159,72 @@ namespace AccountsReceivableModule.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ServiceResponse<PaymentsReportDto>> GetPaymentByIdWithDetailsAndCustumer(string paymentId)
+        {
+            //obtner el pago con sus detalles y el customer
+            var response = new ServiceResponse<PaymentsReportDto>();
+            try
+            {
+                var payment = _context.Payments
+                    .Where(p => p.PaymentId == paymentId);
+
+                var paymentDetails = _context.PaymentDetails
+                    .Where(pd => pd.PaymentId == paymentId);
+
+                //customer con el id que tiene el pago
+                var customer = _context.Customers
+                    .Where(c => c.CustomerId == payment.FirstOrDefault().CustomerId);
+
+                response.Data = ConvertPaymentToPaymetReportDto(payment.FirstOrDefault(), paymentDetails.ToList(), customer.FirstOrDefault());
+                response.Message = "Payment report generated successfully";
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+
+        }
+
+        private PaymentsReportDto ConvertPaymentToPaymetReportDto(Payment payment, List<PaymentDetail> paymentDetails, Customer customer)
+        {
+            var varPaymentsReportDto = new PaymentsReportDto();
+
+            
+            varPaymentsReportDto.PaymentId = payment.PaymentId;
+            varPaymentsReportDto.PaymentDetail = payment.PaymentDetail;
+            varPaymentsReportDto.PaymentAmount = payment.PaymentAmount;
+            varPaymentsReportDto.PaymentDate = payment.PaymentDate;
+            varPaymentsReportDto.IsPrinted = payment.IsPrinted;
+
+            //customer
+            varPaymentsReportDto.Customer = new GetCustomerDto
+            {
+                CustomerId = customer.CustomerId,
+                CustomerName = customer.CustomerName,
+                CustomerAddress = customer.CustomerAddress,
+                CustomerPhone = customer.CustomerPhone,
+                CustomerEmail = customer.CustomerEmail
+            };
+
+            //paymentDetails
+            foreach (var paymentDetail in paymentDetails)
+            {
+                varPaymentsReportDto.PaymentDetails.Add(new GetPaymentDetailDto
+                {
+                    PaymentDetailId = paymentDetail.PaymentDetailId,
+                    PaymentId = paymentDetail.PaymentId,
+                    InvoiceId = paymentDetail.InvoiceId,
+                    AmountApplied = paymentDetail.AmountApplied
+                });
+            }
+
+
+            return varPaymentsReportDto;
+        }
     }
 }
