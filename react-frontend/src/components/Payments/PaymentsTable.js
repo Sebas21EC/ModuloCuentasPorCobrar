@@ -6,7 +6,7 @@ const formatDate = (value) => {
   const dateObject = new Date(value);
   return dateObject.toISOString().split('T')[0]; // Esto devolverá 'YYYY-MM-DD'
 };
-function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
+function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick, onPrintClick}) {
   const columns = [
     
     { Header: 'ACCIONES', accessor: 'actions' },  
@@ -32,10 +32,12 @@ function PaymentTable({ payments, onEditClick, onDeleteClick, onViewClick}) {
         canEdit={false}
     canDelete={false}
     canView={true}
+    canPrint={true}
     onViewClick={onViewClick} 
     onDeleteClick={onDeleteClick}
     onEditClick={onEditClick}
-        // Otros props como onEditClick, onDeleteClick, etc.
+    onPrintClick={onPrintClick}
+        
       />
       ) : (
         <p>No hay datos para mostrar.</p> // O algún otro UI de carga o error.

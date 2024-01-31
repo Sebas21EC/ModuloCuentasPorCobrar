@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config";
 import Dialog from "@mui/material/Dialog";
@@ -10,8 +10,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
 import { GlobalFilter } from "../Tables/GlobalFilter"; // Importa el componente GlobalFilter
+import { IPContext } from "../../IPContext";
 
 const CustomerModal = ({ isOpen, onRequestClose, onSelectCustomer }) => {
+    const clientIP=useContext(IPContext);
     const [customers, setCustomers] = useState([]);
     const [allCustomers, setAllCustomers] = useState([]); // Guardar la lista completa de clientes
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -22,6 +24,28 @@ const CustomerModal = ({ isOpen, onRequestClose, onSelectCustomer }) => {
         const fetchCustomers = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/Customer`);
+                //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Customers",
+          description: `User ${username} read data from customers`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-CUSTOMERS-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
                 setCustomers(response.data.data);
                 setAllCustomers(response.data.data); // Guardar la lista completa en el estado
             } catch (error) {

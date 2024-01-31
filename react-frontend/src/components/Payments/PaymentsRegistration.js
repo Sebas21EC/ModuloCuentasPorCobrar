@@ -86,6 +86,28 @@ function PaymentRegistration() {
     event.preventDefault();
     const uppercasePaymentDetail = paymentDetail.toUpperCase();
     const response = await axios.get(`${API_BASE_URL}/invoice/customer/${customerId}`);
+    //Auditoria
+    const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+    const username = responseLogin ? responseLogin.username : null;
+    const token = responseLogin ? responseLogin.token : null;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+    await fetch(`${API_AUDIT_URL}/audit`, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "Read Invoices",
+        description: `User ${username} read data from invoices`,
+        ip: clientIP,
+        date: formattedDate,
+        functionName: "AR-INVOICES-READ",
+        observation: ` ${username}`,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    //    
 
     const totalBalance = response.data.data.reduce((sum, invoice) => sum + invoice.balance, 0);
     if (parseFloat(paymentAmount) <= totalBalance) {
@@ -142,6 +164,28 @@ function PaymentRegistration() {
   const loadPendingInvoices = async (customerId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/invoice/customer/${customerId}`);
+      //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Invoices",
+          description: `User ${username} read data from invoices`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-INVOICES-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
 
       // Suma de todos los balances de las facturas
       const totalBalance = response.data.data.reduce((sum, invoice) => sum + invoice.balance, 0);
@@ -284,6 +328,28 @@ function PaymentRegistration() {
     const fetchCustomers = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/Customer`);
+        //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Customers",
+          description: `User ${username} read data from customers`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-CUSTOMERS-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
 
         setCustomers(response.data.data);
         setAllCustomers(response.data.data);
@@ -308,6 +374,28 @@ function PaymentRegistration() {
       async function fetchCustomerBalance() {
         try {
           const response = await axios.get(`${API_BASE_URL}/invoice/customer/${customerId}`);
+          //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Read Invoices",
+          description: `User ${username} read data from invoices`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-INVOICES-READ",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //    
           const totalBalance = response.data.data.reduce((sum, invoice) => sum + invoice.balance, 0);
           setBalance(totalBalance);
         } catch (error) {

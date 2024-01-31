@@ -77,24 +77,27 @@ function Login({ onLogin }) {
         saveToSessionStorage("responseLogin", dataSession);
 
         //Auditoria
-                
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-        await fetch(`${API_AUDIT_URL}/audit`, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "Sesion started",
-            description: `User : ${username}`,
-            ip: clientIP,
-            date: formattedDate,
-            functionName: "AR-LOGIN",
-            observation: `${username} started session`,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username1 = responseLogin ? responseLogin.username : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Login",
+          description: `User ${username1} logged in`,
+          ip: '0.0.0.0',
+          date: formattedDate,
+          functionName: "AR-LOGIN",
+          observation: ` ${username1}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //                  
+      
 
         onLogin();
       } else {

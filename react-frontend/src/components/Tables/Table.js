@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import PrintIcon from '@mui/icons-material/Print';
 
 import {
   TableBody,
@@ -17,7 +18,7 @@ import {
   Paper,
   IconButton
 } from '@mui/material';
-const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit = true, canDelete = true, canView = true }) => {
+const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, onPrintClick, canEdit = true, canDelete = true, canView = true, canPrint }) => {
 
   // default column component
   const defaultColumn = useMemo(() => {
@@ -99,6 +100,11 @@ const Table = ({ columns, data, onEditClick, onDeleteClick, onViewClick, canEdit
                         {canView && (
                           <IconButton onClick={() => onViewClick(item)}>
                             <VisibilityIcon />
+                          </IconButton>
+                        )}
+                        {canPrint && (
+                          <IconButton onClick={() => onPrintClick(item)}>
+                            <PrintIcon />
                           </IconButton>
                         )}
                       </TableCell>

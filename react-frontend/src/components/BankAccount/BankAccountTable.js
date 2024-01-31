@@ -20,6 +20,7 @@ function BankAccountTable({ bankAccounts, onEditClick, onDeleteClick, onViewClic
       canEdit={true}
   canDelete={false}
   canView={true}
+  canPrint={false}
   onViewClick={onViewClick} 
   onDeleteClick={onDeleteClick}
   onEditClick={onEditClick}

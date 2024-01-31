@@ -65,12 +65,11 @@ function AccountStatus() {
     setCustomers(filteredCustomers);
   }, [searchText, allCustomers]);
   const canSearch = () => {
-    return (
-      startDate &&
-      endDate &&
-      clienteCedula &&
-      new Date(startDate) <= new Date(endDate)
-    );
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const isCedulaFilled = clienteCedula && clienteCedula.trim() !== '';
+    const areDatesValid = start && end && start <= end;
+    return isCedulaFilled && areDatesValid;
   };
 
   const handleSearchClick = async () => {
@@ -114,6 +113,7 @@ function AccountStatus() {
         setShowTable(true);
       } else {
         alert('No se encontraron datos para la búsqueda realizada.');
+        setShowTable(false);
       }
 
     } catch (err) {
