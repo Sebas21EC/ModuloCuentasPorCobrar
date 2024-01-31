@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from '@mui/material';
-import CustomerModal from '../Modals/CustomerModal';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import TitleSection from '../Sidebar/TitleSection';
 import PaymentsDetailsPDF from '../PDF/PaymentsDetailsPDF';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-
+import { IPContext } from '../../IPContext';
 import axios from "axios";
 import {
   Container,
@@ -29,11 +28,11 @@ import {
 import { API_BASE_URL, API_AUDIT_URL } from "../../config";
 
 function PaymentRegistration() {
+  const clientIP = useContext(IPContext);
 
   const navigate = useNavigate();
   const [selectedBankAccount, setSelectedBankAccount] = useState('');
   const [customers, setCustomers] = useState([]);
-
   const [customerName, setCustomerName] = useState('');
   const [customerSearchError, setCustomerSearchError] = useState('');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -53,7 +52,6 @@ function PaymentRegistration() {
   const [isPrinted, setIsPrinted] = useState([]);
   const [balance, setBalance] = useState([]);
   //
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [paymentDetailsForPDF, setPaymentDetailsForPDF] = useState("");
   const [allCustomers, setAllCustomers] = useState([]);
@@ -77,7 +75,6 @@ function PaymentRegistration() {
         }));
         setBankAccounts(bankAccounts);
       } catch (err) {
-        console.error(err);
         alert('Hubo un error al cargar las cuentas bancarias.');
       }
     };
@@ -102,7 +99,28 @@ function PaymentRegistration() {
           paymentDate: paymentDate,
           isPrinted: false
         });
-
+        //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Create Payment",
+          description: `User ${username} create a payment`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-PAYMENTS-CREATE",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //     
         if (response.data && response.data.data && response.data.data.length) {
           const lastPayment = response.data.data[response.data.data.length - 1];
           setPaymentId(lastPayment.paymentId); // Guardar el paymentId del último pago
@@ -112,7 +130,6 @@ function PaymentRegistration() {
 
       } catch (err) {
         alert(err);
-        console.log(err);
       }
     } else {
       // Manejar el error aquí, por ejemplo, mostrar un mensaje
@@ -140,28 +157,11 @@ function PaymentRegistration() {
         }
       }
     } catch (error) {
-      console.error('Error al cargar facturas pendientes:', error);
+      alert('Error al cargar facturas pendientes');
     }
   };
 
-  const handleOpenCustomerModal = () => {
-    setIsCustomerModalOpen(true);
-  };
-
-  const handleCloseCustomerModal = () => {
-    setIsCustomerModalOpen(false);
-  };
-
-  // const handleSelectCustomer = (customerId, customerName) => {
-  //   setSelectedCustomerId(customerId);
-  //   setCustomerId(customerId);
-  //   setCustomerName(customerName);
-  //   console.log(customerName)
-  //   // Mostrar el segundo formulario cuando se encuentre el cliente
-  //   setShowPaymentForm(true);
-  //   handleCloseCustomerModal();
-  // };
-  //////
+  
 
   // const handleSubmit = async (event) => {
   //   event.preventDefault();
@@ -198,11 +198,11 @@ function PaymentRegistration() {
       })).filter(detail => detail.amountApplied > 0); // Filtrar los que tienen un monto a aplicar mayor a cero
 
       // Revisar los detalles de pago a enviar para depurar
-      console.log('Detalles de pago a enviar:', paymentDetailsToSend);
+     
 
       // Verificar que hay al menos un detalle de pago antes de enviar
       if (paymentDetailsToSend.length === 0) {
-        console.error('No hay detalles de pago para enviar.');
+       alert('No hay detalles de pago para enviar.');
         return;
       }
       const postData = {
@@ -225,7 +225,28 @@ function PaymentRegistration() {
 
       try {
         const response = await axios.post(`${API_BASE_URL}/PaymentDetail/assign`, postData);
-        console.log('Respuesta de la API:', response.data);
+        //Auditoria
+      const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+      const username = responseLogin ? responseLogin.username : null;
+      const token = responseLogin ? responseLogin.token : null;
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+      await fetch(`${API_AUDIT_URL}/audit`, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "Create payment details",
+          description: `User ${username} created payment details`,
+          ip: clientIP,
+          date: formattedDate,
+          functionName: "AR-PAYMENT-DETAIL-CREATE",
+          observation: ` ${username}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //     
         const paymentDetail = response.data;
         // Restablecer estados, mostrar confirmación, etc.
         setPaymentDetailsForPDF(detailsPDF);
@@ -233,8 +254,7 @@ function PaymentRegistration() {
 
 
       } catch (error) {
-        alert('Error: ' + error.message);
-        console.error('Error al enviar detalles de pago:', error);
+        alert('Error al enviar detalles de pago ');
         // Manejar el error, mostrar mensaje al usuario, etc.
       }
     }
@@ -242,10 +262,7 @@ function PaymentRegistration() {
   const markPaymentAsPrinted = async (paymentId) => {
     try {
       const response = await axios.put(`/api/Payment/${paymentId}`, { isPrinted: true });
-      console.log('Pago marcado como impreso:', response.data);
     } catch (error) {
-      console.error('Error al marcar el pago como impreso:', error);
-      // Manejar el error, mostrar mensaje al usuario, etc.
     }
   };
   const handlePrintConfirmation = (shouldPrint) => {
@@ -373,7 +390,7 @@ function PaymentRegistration() {
               fontWeight: 'normal', // Quita fontWeight para eliminar la negrita
             }}
           >
-            Nombre del Cliente: {customerName} ⮕ Deuda Total $  {balance.toFixed(2)}
+            Nombre del Cliente: {customerName} ⮕ Deuda Total $  {balance}
           </Typography>
         </CardContent>
       </Card>

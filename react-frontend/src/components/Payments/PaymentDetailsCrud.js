@@ -1,10 +1,11 @@
 // PaymentCrud.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {API_BASE_URL,API_AUDIT_URL} from "../../config";
 import PaymentDetailsTable from './PaymentDetailsTable';
 import RowDetailsModal from '../Modals/RowDetailsModal';
+import { IPContext } from '../../IPContext';
 import {
 
   Container,
@@ -15,6 +16,7 @@ import {
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import TitleSection from '../Sidebar/TitleSection';
 function PaymentDetailsCrud() {
+  const clientIP = useContext(IPContext);
   const [payments, setPayments] = useState([]);
   const navigate = useNavigate();
   const [columns,setColumns] = useState("");
@@ -22,13 +24,35 @@ function PaymentDetailsCrud() {
   useEffect(() => {
     loadPayments();
     const paymentDetailsTableColumns = PaymentDetailsTable.columns; // Accede a PaymentDetailsTable.columns
-  console.log('Payment Details Table Columns:', paymentDetailsTableColumns);
+ 
   setColumns(paymentDetailsTableColumns);
   }, []);
 
   const loadPayments = async () => {
   try {
     const result = await axios.get(`${API_BASE_URL}/PaymentDetail`);
+    //Auditoria
+    const responseLogin = JSON.parse(sessionStorage.getItem("responseLogin"));
+    const username = responseLogin ? responseLogin.username : null;
+    const token = responseLogin ? responseLogin.token : null;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
+    await fetch(`${API_AUDIT_URL}/audit`, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "Read Payments Details",
+        description: `User ${username} read data from Payments Details`,
+        ip: clientIP,
+        date: formattedDate,
+        functionName: "AR-PAYMENT-DETAIL-READ",
+        observation: ` ${username}`,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    //     
     if (result.data && result.data.data && Array.isArray(result.data.data)) {
       setPayments(result.data.data); // Acceder correctamente a los datos de la respuesta
       
@@ -36,20 +60,10 @@ function PaymentDetailsCrud() {
       throw new Error('Respuesta no válida de la API');
     }
   } catch (err) {
-    console.error(err);
     alert('Hubo un problema al cargar los detalles de los pagos.');
   }
  
 };
-
-  
-  
-
-  const handleAddPayment = () => {
-    // Navegar al formulario de registro de pagos para agregar un nuevo pago
-    navigate('/payment-registration');
-  };
-
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

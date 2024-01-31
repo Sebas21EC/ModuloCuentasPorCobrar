@@ -1,5 +1,9 @@
 import React from "react";
 import Table from "../Tables/Table";
+const formatDate = (value) => {
+  const dateObject = new Date(value);
+  return dateObject.toISOString().split('T')[0]; // Esto devolverá 'YYYY-MM-DD'
+};
 
 function AccountStatusTable({ accountstatus, onViewClick }) {
   const flattenedData = accountstatus && accountstatus.statement
@@ -18,7 +22,7 @@ function AccountStatusTable({ accountstatus, onViewClick }) {
     : [];
 
   const columns = [
-    { Header: 'Fecha', accessor: 'date' },
+    { Header: 'Fecha', accessor: 'date' ,Cell: ({ value }) => formatDate(value)},
     { Header: 'Cliente ID', accessor: 'customerId' },
     { Header: 'Cliente', accessor: 'customerName' },
     { Header: 'Dirección', accessor: 'customerAddress' },

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "./authActions";
 import { saveToSessionStorage } from "./SessionStorage"; // Implementa esta función
 import { API_BASE_URL, API_AUDIT_URL } from "../../config";
+import { IPContext } from '../../IPContext';
 // import API_AUDIT_URL from "../../config";
 
 import {
-  Container,
   Card,
   CardContent,
   Typography,
@@ -38,6 +38,7 @@ const theme = createTheme({
 });
 
 function Login({ onLogin }) {
+  const clientIP = useContext(IPContext);
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +55,7 @@ function Login({ onLogin }) {
         },
       });
       const dataResponse = await response.json();
-      console.log(dataResponse);
+     
 
       if (dataResponse.success) {
         //alert("Bienvenido");
@@ -76,18 +77,15 @@ function Login({ onLogin }) {
         saveToSessionStorage("responseLogin", dataSession);
 
         //Auditoria
-        const responseLogin = JSON.parse(
-          sessionStorage.getItem("responseLogin")
-        );
-        const username1 = responseLogin ? responseLogin.username : null;
+                
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-        const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+        await fetch(`${API_AUDIT_URL}/audit`, {
           method: "POST",
           body: JSON.stringify({
             action: "Sesion started",
             description: `User : ${username}`,
-            ip: "192.168.0.102",
+            ip: clientIP,
             date: formattedDate,
             functionName: "AR-LOGIN",
             observation: `${username} started session`,
@@ -109,11 +107,7 @@ function Login({ onLogin }) {
         setError(errorMessage);
       }
     } catch (error) {
-      // Manejo de errores en caso de problemas con la solicitud
-      //console.error("Error en la solicitud de inicio de sesión:", error);
-      //alert(
-      // "Error en la solicitud de inicio de sesión, verifique las credenciales ingresadas"
-      //);
+      
       setError(
         "Error en la solicitud de inicio de sesión, verifique las credenciales ingresadas"
       );

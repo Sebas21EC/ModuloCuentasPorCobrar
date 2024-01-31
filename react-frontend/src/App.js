@@ -1,9 +1,7 @@
 // src/App.js
-
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Corrected import statement
 import Sidebar from './components/Sidebar/Sidebar';
-import Topbar from './components/Sidebar/Topbar';
 import Home from './components/Sidebar/Home';
 import Login from './components/Sidebar/Login';
 import BankAccountCrud from './components/BankAccount/BankAccountCrud';
@@ -11,6 +9,8 @@ import PaymentsCrud from './components/Payments/PaymentsCrud';
 import PaymentsRegistration from './components/Payments/PaymentsRegistration';
 import PaymentDetailsCrud from './components/Payments/PaymentDetailsCrud';
 import AccountStatusCrud from './components/AccountStatus/AccountStatusCrud';
+import { IPProvider } from './IPContext';
+import { IPContext } from './IPContext';
 
 // Import other components you want to route to
 import { useDispatch } from "react-redux";
@@ -18,9 +18,9 @@ import { loginSuccess } from "./components/Sidebar/authActions"; // Importa tu a
 import { useEffect } from "react";
 import { logout } from "./components/Sidebar/authActions"; // Importa la acción de cierre de sesión
 import { API_BASE_URL, API_AUDIT_URL } from "./config";
-import AccountStatus from './components/AccountStatus/AccountStatusCrud';
 
 function App() {
+  const clientIP = useContext(IPContext);
   const dispatch = useDispatch();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -50,7 +50,7 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,12 +65,12 @@ function App() {
             const token = responseLogin ? responseLogin.token : null;
             const currentDate = new Date();
             const formattedDate = currentDate.toISOString(); // Esto formateará la fecha como una cadena en formato ISO8601
-            const responseAudit = await fetch(`${API_AUDIT_URL}/audit`, {
+            await fetch(`${API_AUDIT_URL}/audit`, {
               method: "POST",
               body: JSON.stringify({
                 action: "Sesion ended",
                 description: `User : ${username}`,
-                ip: "192.168.0.102",
+                ip: clientIP,
                 date: formattedDate,
                 functionName: "AR-LOGIN",
                 observation: `${username} ended session`,
@@ -99,14 +99,14 @@ function App() {
 
   return (
 
-    
+    <IPProvider>
     <Router> {/* BrowserRouter aliased as Router */}
    
         <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
        
         <Sidebar onLogout={handleLogout}  />
         
-        <main style={{ flexGrow: 1, overflowY: 'auto', padding: '2rem', backgroundColor:'#EAECF9'}}>
+        <main style={{ flexGrow: 1, overflowY: 'auto', backgroundColor:'#EAECF9'}}>
           <Routes> {/* Routes component wraps Route definitions */}
             <Route path="/" element={<Home/>} />
             <Route path="/estado-de-cuenta" element={<AccountStatusCrud/>} />
@@ -122,6 +122,7 @@ function App() {
         </main>
       </div>
     </Router>
+    </IPProvider>
   );
 }
 export default App;
